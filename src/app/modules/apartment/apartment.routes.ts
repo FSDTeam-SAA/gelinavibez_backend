@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post(
   '/',
-  auth(userRole.admin, userRole.contractor),
+  auth(userRole.admin, userRole.user, userRole.contractor),
   fileUploader.upload.fields([
     { name: 'images', maxCount: 10 },
     { name: 'videos', maxCount: 5 },
@@ -18,7 +18,7 @@ router.get('/', apartmentController.getAllApartment);
 router.get('/:id', apartmentController.singleApartment);
 router.put(
   '/:id',
-  auth(userRole.admin, userRole.contractor),
+  auth(userRole.admin, userRole.user, userRole.contractor),
   fileUploader.upload.fields([
     { name: 'images', maxCount: 10 },
     { name: 'videos', maxCount: 5 },
@@ -27,7 +27,7 @@ router.put(
 );
 router.delete(
   '/:id',
-  auth(userRole.admin, userRole.contractor),
+  auth(userRole.admin),
   apartmentController.deleteApartment,
 );
 
