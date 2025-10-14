@@ -86,10 +86,38 @@ const deleteApartment = catchAsync(async (req, res) => {
   });
 });
 
+const getAllApartmentGroupByDay = catchAsync(async (req, res) => {
+  const filters = pick(req.query, [
+    'searchTerm',
+    'title',
+    'description',
+    'aboutListing',
+    'address.street',
+    'address.city',
+    'address.state',
+    'address.zipCode',
+    'amenities',
+    'status',
+    'day',
+  ]);
+  const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
+  const result = await apartmentService.getAllApartmentGroupByDay(
+    filters,
+    options,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Apartment retrieved successfully',
+    data: result,
+  });
+});
+
 export const apartmentController = {
   createApartment,
   getAllApartment,
   singleApartment,
   updateApartment,
   deleteApartment,
+  getAllApartmentGroupByDay
 };

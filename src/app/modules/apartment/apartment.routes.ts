@@ -5,6 +5,8 @@ import { apartmentController } from './apartment.controller';
 import { fileUploader } from '../../helper/fileUploder';
 const router = express.Router();
 
+router.get('/group-by-day', apartmentController.getAllApartmentGroupByDay);
+
 router.post(
   '/',
   auth(userRole.admin, userRole.user, userRole.contractor),
