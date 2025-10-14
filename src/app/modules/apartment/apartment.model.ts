@@ -63,6 +63,7 @@ const apartmentSchema = new Schema<IApartment>(
     availableFrom: {
       month: { type: String, trim: true },
       time: { type: Date },
+      day: { type: String, trim: true },
     },
     action: {
       type: String,

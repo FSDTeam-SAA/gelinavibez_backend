@@ -23,6 +23,7 @@ export interface IApartment {
   availableFrom?: {
     month: string;
     time: Date;
+    day: string;
   };
 
   action: 'available' | 'rented' | 'maintenance';
