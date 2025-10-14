@@ -150,10 +150,84 @@ const deleteApartment = async (id: string) => {
   return result;
 };
 
+
+const getAllApartmentGroupByDay = async (params: any, options: IOption) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const searchableFields = [
+    'title',
+    'description',
+    'aboutListing',
+    'address.street',
+    'address.city',
+    'address.state',
+    'address.zipCode',
+    'amenities',
+    'status',
+    'day',
+  ];
+
+  const andCondition: any[] = [];
+
+  // 🔍 Search term
+  if (searchTerm) {
+    andCondition.push({
+      $or: searchableFields.map((field) => {
+        if (field === 'amenities') {
+          return {
+            [field]: { $elemMatch: { $regex: searchTerm, $options: 'i' } },
+          };
+        }
+        return { [field]: { $regex: searchTerm, $options: 'i' } };
+      }),
+    });
+  }
+
+  // 🎯 Filters
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  // 📦 Group by Day
+  const result = await Apartment.aggregate([
+    { $match: whereCondition },
+    { $sort: { [sortBy || 'createdAt']: sortOrder === 'asc' ? 1 : -1 } },
+    {
+      $group: {
+        _id: '$day',
+        apartments: { $push: '$$ROOT' },
+        count: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+    { $skip: skip },
+    { $limit: limit },
+  ]);
+
+  const total = await Apartment.countDocuments(whereCondition);
+
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
+
 export const apartmentService = {
   createApartment,
   getAllApartment,
   singleApartment,
   updateApartment,
   deleteApartment,
+  getAllApartmentGroupByDay
 };
