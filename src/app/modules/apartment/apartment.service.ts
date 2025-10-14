@@ -59,6 +59,7 @@ const getAllApartment = async (params: any, options: IOption) => {
     'address.zipCode',
     'amenities',
     'status',
+    'day'
   ];
 
   const andCondition: any[] = [];

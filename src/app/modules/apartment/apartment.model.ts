@@ -59,11 +59,22 @@ const apartmentSchema = new Schema<IApartment>(
       type: [String],
       default: [],
     },
+    day: {
+      type: String,
+      enum: [
+        'saturday',
+        'sunday',
+        'monday',
+        'tuesday',
+        'wednesday',
+        'thursday',
+        'friday',
+      ],
+    },
 
     availableFrom: {
       month: { type: String, trim: true },
       time: { type: Date },
-      day: { type: String, trim: true },
     },
     action: {
       type: String,
