@@ -35,6 +35,7 @@ const getAllApartment = catchAsync(async (req, res) => {
     'address.zipCode',
     'amenities',
     'status',
+    'day',
   ]);
   const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
   const result = await apartmentService.getAllApartment(filters, options);

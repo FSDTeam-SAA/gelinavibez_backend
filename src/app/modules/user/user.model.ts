@@ -11,8 +11,8 @@ const userSchema = new mongoose.Schema<IUser>(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ['admin', 'tenant', 'expert', 'contractor'],
-      default: 'tenant',
+      enum: ['admin', 'user', 'contractor'],
+      default: 'user',
     },
     profileImage: { type: String },
     bio: { type: String },
@@ -34,7 +34,6 @@ userSchema.pre('save', async function (next) {
   }
   next();
 });
-
 
 const User = mongoose.model<IUser>('User', userSchema);
 export default User;

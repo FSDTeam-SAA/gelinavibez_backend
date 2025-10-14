@@ -7,7 +7,7 @@ const router = express.Router();
 router.post('/', contactController.createContact);
 router.get('/', auth(userRole.admin), contactController.getAllContact);
 router.get('/:id', auth(userRole.admin), contactController.getSingleContact);
-router.patch('/:id', auth(userRole.admin), contactController.updateContact);
+router.put('/:id', auth(userRole.admin), contactController.updateContact);
 router.delete('/:id', auth(userRole.admin), contactController.deleteContact);
 
 export const contactRouter = router;

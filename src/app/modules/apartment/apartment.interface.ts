@@ -20,6 +20,8 @@ export interface IApartment {
   images?: string[];
   videos?: string[];
 
+  day: string;
+
   availableFrom?: {
     month: string;
     time: Date;

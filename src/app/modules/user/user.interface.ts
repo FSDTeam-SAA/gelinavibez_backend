@@ -3,7 +3,7 @@ export interface IUser {
   lastName: string;
   email: string;
   password: string;
-  role: 'admin' | 'tenant' | 'expert' | 'contractor';
+  role: 'admin' | 'user' | 'contractor';
   profileImage?: string;
   bio?: string;
   phone?: string;
