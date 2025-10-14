@@ -59,7 +59,8 @@ const getAllContractor = async (params: any, options: IOption) => {
       [sortBy]: sortOrder,
     } as any)
     .skip(skip)
-    .limit(limit);
+    .limit(limit)
+    .populate('service');
 
   if (!result) throw new AppError(400, 'Failed to get contact');
   const total = await Contractor.countDocuments(whereCondition);
@@ -70,7 +71,7 @@ const getAllContractor = async (params: any, options: IOption) => {
 };
 
 const getSingleContractor = async (id: string) => {
-  const result = await Contractor.findById(id);
+  const result = await Contractor.findById(id).populate('service');
   if (!result) throw new AppError(400, 'Failed to get contact');
   return result;
 };
@@ -86,7 +87,7 @@ const updateContractor = async (
   }
   const result = await Contractor.findByIdAndUpdate(id, payload, {
     new: true,
-  });
+  }).populate('service');
   if (!result) throw new AppError(400, 'Failed to update contact');
   return result;
 };
