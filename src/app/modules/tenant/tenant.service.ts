@@ -7,6 +7,7 @@ import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import sendMailer from '../../helper/sendMailer';
 import { ITenant } from './tanant.interface';
+import pagination, { IOption } from '../../helper/pagenation';
 
 const stripe = new Stripe(config.stripe.secretKey!, {
   apiVersion: '2023-10-16' as any,
@@ -144,4 +145,108 @@ const denyTenant = async (tenantId: string) => {
   return { message: 'Tenant denied and payment refunded' };
 };
 
-export const tenantService = { createTenant, approveTenant, denyTenant };
+const getAllTenantApplication = async (params: any, options: IOption) => {
+  const { page, skip, limit, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+  const addCondition: any[] = [];
+  const searchableFields = [
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'ssn',
+    'status',
+  ];
+  if (searchTerm) {
+    addCondition.push({
+      $or: searchableFields.map((field) => ({
+        [field]: {
+          $regex: searchTerm,
+          $options: 'i',
+        },
+      })),
+    });
+  }
+  if (Object.keys(filterData).length) {
+    addCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const whereCondition = addCondition.length > 0 ? { $and: addCondition } : {};
+  const result = await Tenant.find(whereCondition)
+    .sort({
+      [sortBy]: sortOrder,
+    } as any)
+    .skip(skip)
+    .limit(limit)
+    .populate(
+      'apartmentId',
+      'title description aboutListing price bedrooms bathrooms squareFeet',
+    )
+    .populate('createBy', 'firstName lastName email profileImage role');
+
+  const total = await Tenant.countDocuments(whereCondition);
+  return {
+    meta: { total, page, limit },
+    data: result,
+  };
+};
+
+const getTenantApplication = async (tenantId: string) => {
+  const tenant = await Tenant.findById(tenantId)
+    .populate(
+      'apartmentId',
+      'title description aboutListing price bedrooms bathrooms squareFeet',
+    )
+    .populate('createBy', 'firstName lastName email profileImage role');
+  if (!tenant) throw new AppError(404, 'Tenant not found');
+  return tenant;
+};
+
+const updateTenantApplication = async (
+  tenantId: string,
+  payload: Partial<ITenant>,
+  files?: Record<string, Express.Multer.File[]>,
+) => {
+  // ফাইল আপলোড
+  if (files) {
+    payload.uploads = {};
+    const allowedUploadKeys = [
+      'idCard',
+      'ssnDoc',
+      'voucherDoc',
+      'incomeDoc',
+    ] as const;
+    for (const key of Object.keys(files)) {
+      if (allowedUploadKeys.includes(key as any)) {
+        const file = files[key][0];
+        const uploaded = await fileUploader.uploadToCloudinary(file);
+        (payload.uploads as any)[key] = uploaded.secure_url;
+      }
+    }
+  }
+  const tenant = await Tenant.findByIdAndUpdate(tenantId, payload, {
+    new: true,
+  });
+  if (!tenant) throw new AppError(404, 'Tenant not found');
+  return tenant;
+};
+
+const deleteTenantApplication = async (tenantId: string) => {
+  const tenant = await Tenant.findByIdAndDelete(tenantId);
+  if (!tenant) throw new AppError(404, 'Tenant not found');
+  return tenant;
+};
+
+export const tenantService = {
+  createTenant,
+  approveTenant,
+  denyTenant,
+  getAllTenantApplication,
+  getTenantApplication,
+  updateTenantApplication,
+  deleteTenantApplication,
+};

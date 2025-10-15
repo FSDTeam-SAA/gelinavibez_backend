@@ -1,3 +1,4 @@
+import pick from '../../helper/pick';
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import { tenantService } from './tenant.service';
@@ -37,4 +38,65 @@ const denyTenant = catchAsync(async (req, res) => {
   });
 });
 
-export const tenantController = { createTenant, approveTenant, denyTenant };
+const getAllTenantApplication = catchAsync(async (req, res) => {
+  const filters = pick(req.query, [
+    'searchTerm',
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'ssn',
+    'status',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await tenantService.getAllTenantApplication(filters, options);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Tenant applications',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+const getTenantApplication = catchAsync(async (req, res) => {
+  const result = await tenantService.getTenantApplication(req.params.id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Tenant application',
+    data: result,
+  });
+});
+const updateTenantApplication = catchAsync(async (req, res) => {
+  const result = await tenantService.updateTenantApplication(
+    req.params.id,
+    req.body,
+    req.files as any,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Tenant application updated',
+    data: result,
+  });
+});
+const deleteTenantApplication = catchAsync(async (req, res) => {
+  const result = await tenantService.deleteTenantApplication(req.params.id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Tenant application deleted',
+    data: result,
+  });
+});
+
+export const tenantController = {
+  createTenant,
+  approveTenant,
+  denyTenant,
+  getAllTenantApplication,
+  getTenantApplication,
+  updateTenantApplication,
+  deleteTenantApplication,
+};

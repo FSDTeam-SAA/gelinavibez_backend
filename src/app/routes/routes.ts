@@ -7,6 +7,7 @@ import { serviceRouter } from '../modules/service/service.routes';
 import { contractorRouter } from '../modules/contractor/contractor.routes';
 import { callRequestRouter } from '../modules/callRequest/callRequest.routes';
 import { tenantRouter } from '../modules/tenant/tenant.routes';
+import { paymentRouter } from '../modules/payment/payment.routes';
 
 const router = Router();
 
@@ -42,6 +43,10 @@ const moduleRoutes = [
   {
     path: '/tenant',
     route: tenantRouter,
+  },
+  {
+    path: '/payment',
+    route: paymentRouter,
   },
 ];
 
