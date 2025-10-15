@@ -16,19 +16,19 @@ router.post(
 
 router.get(
   '/profile',
-  auth(userRole.admin, userRole.contractor, userRole.expert, userRole.tenant),
+  auth(userRole.admin, userRole.contractor, userRole.user),
   userController.profile,
+);
+router.put(
+  '/profile',
+  auth(userRole.admin, userRole.contractor, userRole.user),
+  fileUploader.upload.single('profileImage'),
+  userController.updateUserById,
 );
 
 router.get('/all-user', auth(userRole.admin), userController.getAllUser);
 router.get('/:id', auth(userRole.admin), userController.getUserById);
-router.put(
-  '/:id',
-  auth(userRole.admin),
-  fileUploader.upload.single('profileImage'),
-  validationRequest(userValidation.updateUserSchema),
-  userController.updateUserById,
-);
+
 router.delete('/:id', auth(userRole.admin), userController.deleteUserById);
 
 export const userRoutes = router;

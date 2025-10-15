@@ -37,9 +37,10 @@ const getUserById = catchAsync(async (req, res) => {
 
 const updateUserById = catchAsync(async (req, res) => {
   const file = req.file;
-  const fromData = req.body.data ? req.body.data : req.body;
+  console.log(file)
+  const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
   const result = await userService.updateUserById(
-    req.params.id,
+    req.user.id,
     fromData,
     file,
   );

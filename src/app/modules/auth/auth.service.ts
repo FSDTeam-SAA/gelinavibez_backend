@@ -103,13 +103,9 @@ const verifyEmail = async (email: string, otp: string) => {
   return { message: 'Email verified successfully' };
 };
 
-const resetPassword = async (
-  email: string,
-  newPassword: string,
-) => {
+const resetPassword = async (email: string, newPassword: string) => {
   const user = await User.findOne({ email });
   if (!user) throw new AppError(404, 'User not found');
-  
 
   user.password = newPassword;
   user.otp = undefined;
@@ -136,6 +132,22 @@ const resetPassword = async (
   };
 };
 
+const changePassword = async (
+  userId: string,
+  oldPassword: string,
+  newPassword: string,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+  const isPasswordMatched = await bcrypt.compare(oldPassword, user.password);
+  if (!isPasswordMatched) throw new AppError(400, 'Password not matched');
+
+  user.password = newPassword;
+  await user.save();
+
+  return { message: 'Password changed successfully' };
+};
+
 export const authService = {
   registerUser,
   loginUser,
@@ -143,4 +155,5 @@ export const authService = {
   forgotPassword,
   verifyEmail,
   resetPassword,
+  changePassword,
 };
