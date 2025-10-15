@@ -1,0 +1,26 @@
+import express from 'express';
+import auth from '../../middlewares/auth';
+import { userRole } from '../user/user.constant';
+import { tenantController } from './tenant.controller';
+import { fileUploader } from '../../helper/fileUploder';
+const router = express.Router();
+
+router.post(
+  '/',
+  auth(userRole.user),
+  fileUploader.upload.fields([
+    { name: 'idCard', maxCount: 1 },
+    { name: 'ssnDoc', maxCount: 1 },
+    { name: 'voucherDoc', maxCount: 1 },
+    { name: 'incomeDoc', maxCount: 1 },
+  ]),
+  tenantController.createTenant,
+);
+router.patch(
+  '/:id/approve',
+  auth(userRole.admin),
+  tenantController.approveTenant,
+);
+router.patch('/:id/deny', auth(userRole.admin), tenantController.denyTenant);
+
+export const tenantRouter = router;
