@@ -231,6 +231,134 @@ const updateApartmentStatus = async (
   return result;
 };
 
+// my apartment-------------------
+
+// ✅ Get All My Apartments
+const getMyApartments = async (
+  ownerId: string,
+  params: any,
+  options: IOption,
+) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const searchableFields = [
+    'title',
+    'description',
+    'aboutListing',
+    'address.street',
+    'address.city',
+    'address.state',
+    'address.zipCode',
+    'amenities',
+    'status',
+    'day',
+  ];
+
+  const andCondition: any[] = [];
+
+  // 🔍 Search term
+  if (searchTerm) {
+    andCondition.push({
+      $or: searchableFields.map((field) => {
+        if (field === 'amenities') {
+          return {
+            [field]: { $elemMatch: { $regex: searchTerm, $options: 'i' } },
+          };
+        }
+        return { [field]: { $regex: searchTerm, $options: 'i' } };
+      }),
+    });
+  }
+
+  // 🎯 Filters
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+  const result = await Apartment.find({ ownerId, ...whereCondition })
+    .sort({ [sortBy]: sortOrder } as any)
+    .skip(skip)
+    .limit(limit);
+  const total = await Apartment.countDocuments({ownerId,...whereCondition});
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
+
+// ✅ Get Single Apartment (own)
+const getMySingleApartment = async (
+  ownerId: string,
+  apartmentId: string,
+): Promise<IApartment | null> => {
+  const apartment = await Apartment.findOne({ _id: apartmentId, ownerId });
+  if (!apartment) {
+    throw new AppError(404, 'Apartment not found or not yours');
+  }
+  return apartment;
+};
+
+// ✅ Update Apartment (own)
+const updateMyApartment = async (
+  ownerId: string,
+  apartmentId: string,
+  payload: Partial<IApartment>,
+  images?: Express.Multer.File[],
+  videos?: Express.Multer.File[],
+) => {
+  const apartment = await Apartment.findOne({ _id: apartmentId, ownerId });
+  if (!apartment) {
+    throw new AppError(404, 'Apartment not found or not yours');
+  }
+
+  if (images && images.length > 0) {
+    const uploadImage = await Promise.all(
+      images.map(async (image) => {
+        const { secure_url } = await fileUploader.uploadToCloudinary(image);
+        return secure_url;
+      }),
+    );
+    payload.images = uploadImage;
+  }
+
+  if (videos && videos.length > 0) {
+    const uploadVideo = await Promise.all(
+      videos.map(async (video) => {
+        const { secure_url } = await fileUploader.uploadToCloudinary(video);
+        return secure_url;
+      }),
+    );
+    payload.videos = uploadVideo;
+  }
+
+  const updated = await Apartment.findByIdAndUpdate(apartmentId, payload, {
+    new: true,
+    runValidators: true,
+  });
+  return updated;
+};
+
+// ✅ Delete Apartment (own)
+const deleteMyApartment = async (ownerId: string, apartmentId: string) => {
+  const apartment = await Apartment.findOne({ _id: apartmentId, ownerId });
+  if (!apartment) {
+    throw new AppError(404, 'Apartment not found or not yours');
+  }
+
+  await Apartment.findByIdAndDelete(apartmentId);
+  return { message: 'Apartment deleted successfully' };
+};
+
 export const apartmentService = {
   createApartment,
   getAllApartment,
@@ -239,4 +367,8 @@ export const apartmentService = {
   deleteApartment,
   getAllApartmentGroupByDay,
   updateApartmentStatus,
+  getMyApartments,
+  getMySingleApartment,
+  updateMyApartment,
+  deleteMyApartment,
 };

@@ -126,6 +126,91 @@ const updateApartmentStatus = catchAsync(async (req, res) => {
   });
 });
 
+// my apartment-------------------
+// ✅ Get all my apartments
+const getMyApartments = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const filters = pick(req.query, [
+    'searchTerm',
+    'title',
+    'description',
+    'aboutListing',
+    'address.street',
+    'address.city',
+    'address.state',
+    'address.zipCode',
+    'amenities',
+    'status',
+    'day',
+  ]);
+  const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
+  const result = await apartmentService.getMyApartments(
+    userId,
+    filters,
+    options,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'My apartments retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+// ✅ Get single my apartment
+const getMySingleApartment = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const result = await apartmentService.getMySingleApartment(
+    userId,
+    req.params.id,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Single apartment retrieved successfully',
+    data: result,
+  });
+});
+
+// ✅ Update my apartment
+const updateMyApartment = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+  const images = files?.images;
+  const videos = files?.videos;
+  const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
+
+  const result = await apartmentService.updateMyApartment(
+    userId,
+    req.params.id,
+    fromData,
+    images,
+    videos,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Apartment updated successfully',
+    data: result,
+  });
+});
+
+// ✅ Delete my apartment
+const deleteMyApartment = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const result = await apartmentService.deleteMyApartment(
+    userId,
+    req.params.id,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Apartment deleted successfully',
+    data: result,
+  });
+});
+
 export const apartmentController = {
   createApartment,
   getAllApartment,
@@ -134,4 +219,8 @@ export const apartmentController = {
   deleteApartment,
   getAllApartmentGroupByDay,
   updateApartmentStatus,
+  getMyApartments,
+  getMySingleApartment,
+  updateMyApartment,
+  deleteMyApartment,
 };
