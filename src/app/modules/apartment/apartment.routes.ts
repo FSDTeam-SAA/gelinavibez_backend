@@ -7,6 +7,35 @@ const router = express.Router();
 
 router.get('/group-by-day', apartmentController.getAllApartmentGroupByDay);
 
+// my apartment-------------------
+
+router.get(
+  '/my-apartments',
+  auth(userRole.admin, userRole.user, userRole.contractor),
+  apartmentController.getMyApartments,
+);
+router.get(
+  '/my-apartments/:id',
+  auth(userRole.admin, userRole.user, userRole.contractor),
+  apartmentController.getMySingleApartment,
+);
+router.put(
+  '/my-apartments/:id',
+  auth(userRole.admin, userRole.user, userRole.contractor),
+  fileUploader.upload.fields([
+    { name: 'images', maxCount: 10 },
+    { name: 'videos', maxCount: 5 },
+  ]),
+  apartmentController.updateMyApartment,
+);
+router.delete(
+  '/my-apartments/:id',
+  auth(userRole.admin, userRole.user, userRole.contractor),
+  apartmentController.deleteMyApartment,
+);
+
+// ---------------------------------
+
 router.post(
   '/',
   auth(userRole.admin, userRole.user, userRole.contractor),
