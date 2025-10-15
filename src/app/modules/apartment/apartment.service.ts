@@ -59,7 +59,7 @@ const getAllApartment = async (params: any, options: IOption) => {
     'address.zipCode',
     'amenities',
     'status',
-    'day'
+    'day',
   ];
 
   const andCondition: any[] = [];
@@ -150,7 +150,6 @@ const deleteApartment = async (id: string) => {
   return result;
 };
 
-
 const getAllApartmentGroupByDay = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
   const { searchTerm, ...filterData } = params;
@@ -223,11 +222,21 @@ const getAllApartmentGroupByDay = async (params: any, options: IOption) => {
   };
 };
 
+const updateApartmentStatus = async (
+  id: string,
+  payload: { status: 'approve' | 'denied' },
+) => {
+  const result = await Apartment.findByIdAndUpdate(id, payload, { new: true });
+  if (!result) throw new AppError(404, 'apartment not found');
+  return result;
+};
+
 export const apartmentService = {
   createApartment,
   getAllApartment,
   singleApartment,
   updateApartment,
   deleteApartment,
-  getAllApartmentGroupByDay
+  getAllApartmentGroupByDay,
+  updateApartmentStatus,
 };
