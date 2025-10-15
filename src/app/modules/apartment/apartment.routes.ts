@@ -17,6 +17,13 @@ router.post(
   apartmentController.createApartment,
 );
 router.get('/', apartmentController.getAllApartment);
+
+router.put(
+  '/:id/status',
+  auth(userRole.admin),
+  apartmentController.updateApartmentStatus,
+);
+
 router.get('/:id', apartmentController.singleApartment);
 router.put(
   '/:id',

@@ -113,11 +113,25 @@ const getAllApartmentGroupByDay = catchAsync(async (req, res) => {
   });
 });
 
+const updateApartmentStatus = catchAsync(async (req, res) => {
+  const result = await apartmentService.updateApartmentStatus(
+    req.params.id,
+    req.body.status,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Apartment status updated successfully',
+    data: result,
+  });
+});
+
 export const apartmentController = {
   createApartment,
   getAllApartment,
   singleApartment,
   updateApartment,
   deleteApartment,
-  getAllApartmentGroupByDay
+  getAllApartmentGroupByDay,
+  updateApartmentStatus,
 };
