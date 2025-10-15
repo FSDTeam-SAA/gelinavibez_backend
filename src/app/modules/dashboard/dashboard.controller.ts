@@ -1,10 +1,10 @@
 import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
-import { dashboardController } from './dashboard.service';
+import { dashboardService } from './dashboard.service';
 
 const dashboardViewCount = catchAsync(async (req, res) => {
   console.log('first');
-  const result = await dashboardController.dashboardViewCount();
+  const result = await dashboardService.dashboardViewCount();
   sendResponse(res, {
     statusCode: 200,
     success: true,
