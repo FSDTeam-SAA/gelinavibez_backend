@@ -65,7 +65,7 @@ const updateUserById = async (
 ) => {
   if (file) {
     const uploadProfile = await fileUploader.uploadToCloudinary(file);
-    if (uploadProfile?.secure_url) {
+    if (!uploadProfile?.secure_url) {
       throw new AppError(400, 'Failed to upload profile image');
     }
     payload.profileImage = uploadProfile.secure_url;
