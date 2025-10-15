@@ -16,6 +16,33 @@ router.post(
   ]),
   tenantController.createTenant,
 );
+
+router.get('/', auth(userRole.admin), tenantController.getAllTenantApplication);
+
+router.get(
+  '/:id',
+  auth(userRole.admin, userRole.user),
+  tenantController.getTenantApplication,
+);
+
+router.put(
+  '/:id',
+  auth(userRole.user, userRole.admin),
+  fileUploader.upload.fields([
+    { name: 'idCard', maxCount: 1 },
+    { name: 'ssnDoc', maxCount: 1 },
+    { name: 'voucherDoc', maxCount: 1 },
+    { name: 'incomeDoc', maxCount: 1 },
+  ]),
+  tenantController.updateTenantApplication,
+);
+
+router.delete(
+  '/:id',
+  auth(userRole.user, userRole.admin),
+  tenantController.deleteTenantApplication,
+);
+
 router.patch(
   '/:id/approve',
   auth(userRole.admin),
