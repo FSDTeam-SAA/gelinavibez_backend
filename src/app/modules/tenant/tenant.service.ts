@@ -22,7 +22,7 @@ const createTenant = async (
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
 
-  // ফাইল আপলোড
+  // file upload
   if (files) {
     payload.uploads = {};
     const allowedUploadKeys = [
