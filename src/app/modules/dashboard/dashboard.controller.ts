@@ -13,6 +13,19 @@ const dashboardViewCount = catchAsync(async (req, res) => {
   });
 });
 
+const getMonthlyEarnings = catchAsync(async (req, res) => {
+  const { year } = req.query;
+  const selectedYear = year ? Number(year) : new Date().getFullYear();
+  const result = await dashboardService.getMonthlyEarnings(selectedYear);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Monthly earnings retrieved successfully',
+    data: result,
+  });
+});
+
 export const dashboardControllers = {
   dashboardViewCount,
+  getMonthlyEarnings,
 };

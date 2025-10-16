@@ -5,10 +5,12 @@ import { dashboardControllers } from './dashboard.controller';
 
 const router = express.Router();
 
+router.get('/', auth(userRole.admin), dashboardControllers.dashboardViewCount);
+
 router.get(
-  '/',
+  '/monthly-earnings',
   auth(userRole.admin),
-  dashboardControllers.dashboardViewCount,
+  dashboardControllers.getMonthlyEarnings,
 );
 
 export const dashboardRouter = router;

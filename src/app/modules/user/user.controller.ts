@@ -21,7 +21,8 @@ const getAllUser = catchAsync(async (req, res) => {
     statusCode: 200,
     success: true,
     message: 'User fetched successfully',
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 
@@ -37,13 +38,9 @@ const getUserById = catchAsync(async (req, res) => {
 
 const updateUserById = catchAsync(async (req, res) => {
   const file = req.file;
-  console.log(file)
+  console.log(file);
   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
-  const result = await userService.updateUserById(
-    req.user.id,
-    fromData,
-    file,
-  );
+  const result = await userService.updateUserById(req.user.id, fromData, file);
   sendResponse(res, {
     statusCode: 200,
     success: true,
