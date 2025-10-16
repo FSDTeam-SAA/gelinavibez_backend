@@ -9,6 +9,7 @@ import { callRequestRouter } from '../modules/callRequest/callRequest.routes';
 import { tenantRouter } from '../modules/tenant/tenant.routes';
 import { paymentRouter } from '../modules/payment/payment.routes';
 import { dashboardRouter } from '../modules/dashboard/dashboard.routes';
+import { subscribeRouter } from '../modules/subscribe/subscribe.routes';
 
 const router = Router();
 
@@ -52,6 +53,10 @@ const moduleRoutes = [
   {
     path: '/dashboard',
     route: dashboardRouter,
+  },
+  {
+    path: '/subscribe',
+    route: subscribeRouter,
   },
 ];
 
