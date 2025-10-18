@@ -10,6 +10,7 @@ import { tenantRouter } from '../modules/tenant/tenant.routes';
 import { paymentRouter } from '../modules/payment/payment.routes';
 import { dashboardRouter } from '../modules/dashboard/dashboard.routes';
 import { subscribeRouter } from '../modules/subscribe/subscribe.routes';
+import { exterminationRouter } from '../modules/extermination/extermination.routes';
 
 const router = Router();
 
@@ -57,6 +58,10 @@ const moduleRoutes = [
   {
     path: '/subscribe',
     route: subscribeRouter,
+  },
+  {
+    path: '/extermination',
+    route: exterminationRouter,
   },
 ];
 
