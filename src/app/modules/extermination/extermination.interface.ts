@@ -22,4 +22,5 @@ export interface IExtermination {
   signature: string;
   date: string;
   user: Types.ObjectId;
+  contractor?: Types.ObjectId;
 }

@@ -75,10 +75,26 @@ const deleteExtermination = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
+const addContractor = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { contractor } = req.body;
+
+  const result = await exterminationService.addContractor(id, contractor);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Contractor added successfully',
+    data: result,
+  });
+});
+
 export const exterminationController = {
   exterminationCreate,
   getAllExtermination,
   getSingleExtermination,
   updateExtermination,
   deleteExtermination,
+  addContractor,
 };
