@@ -6,7 +6,7 @@ import config from '../../config';
 const userSchema = new mongoose.Schema<IUser>(
   {
     firstName: { type: String, required: true },
-    lastName: { type: String, required: true },
+    lastName: { type: String },
     email: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
     role: {

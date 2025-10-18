@@ -4,6 +4,12 @@ import { userRole } from '../user/user.constant';
 import { exterminationController } from './extermination.controller';
 const router = express.Router();
 
+router.put(
+  '/add-contractor/:id',
+  auth(userRole.admin),
+  exterminationController.addContractor,
+);
+
 router.post(
   '/',
   auth(userRole.user),

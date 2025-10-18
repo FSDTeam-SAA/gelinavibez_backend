@@ -1,6 +1,8 @@
 import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
+import sendMailer from '../../helper/sendMailer';
+import User from '../user/user.model';
 import { IContractor } from './contractor.interface';
 import Contractor from './contractor.model';
 
@@ -8,15 +10,51 @@ const createContractor = async (
   payload: IContractor,
   file?: Express.Multer.File,
 ) => {
+  // Upload contractor image if provided
   if (file) {
-    const contractorimage = await fileUploader.uploadToCloudinary(file);
-    payload.image = contractorimage.secure_url;
+    const uploaded = await fileUploader.uploadToCloudinary(file);
+    payload.image = uploaded.secure_url;
   }
-  const result = await Contractor.create(payload);
-  if (!result) {
-    throw new AppError(400, 'contractor is not create');
+
+  // Create contractor in DB
+  const contractor = await Contractor.create(payload);
+  if (!contractor) {
+    throw new AppError(400, 'Contractor not created');
   }
-  return result;
+
+  // Generate random password for contractor login
+  const generatedPassword = `${contractor.name.split(' ')[0].toLowerCase()}${Math.floor(
+    Math.random() * 10000 + 1,
+  )}`;
+
+  // Create a linked user account
+  const newUser = new User({
+    firstName: contractor.name,
+    lastName: '',
+    email: contractor.email,
+    phone: contractor.number,
+    role: 'contractor',
+    password: generatedPassword,
+    profileImage: contractor.image,
+  });
+
+  await newUser.save();
+
+  // Send email with credentials
+  await sendMailer(
+    contractor.email,
+    'Contractor Account Created',
+    `
+      <h2>Welcome, ${contractor.name}</h2>
+      <p>Your contractor account has been created successfully.</p>
+      <p><strong>Login Email:</strong> ${contractor.email}</p>
+      <p><strong>Password:</strong> ${generatedPassword}</p>
+      <p>You can now log in using your credentials.</p>
+      <p>Thank you for joining us!</p>
+    `,
+  );
+
+  return contractor;
 };
 
 const getAllContractor = async (params: any, options: IOption) => {
@@ -93,9 +131,19 @@ const updateContractor = async (
 };
 
 const deleteContractor = async (id: string) => {
-  const result = await Contractor.findByIdAndDelete(id);
-  if (!result) throw new AppError(400, 'Failed to delete contact');
-  return result;
+  const contractor = await Contractor.findById(id);
+  if (!contractor) throw new AppError(404, 'Contractor not found');
+
+  const deletedContractor = await Contractor.findByIdAndDelete(id);
+  if (!deletedContractor)
+    throw new AppError(400, 'Failed to delete contractor');
+
+  await User.findOneAndDelete({
+    email: contractor.email,
+    role: 'contractor',
+  });
+
+  return deletedContractor;
 };
 
 export const contractorService = {

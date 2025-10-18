@@ -86,10 +86,21 @@ const deleteExtermination = async (id: string) => {
   return result;
 };
 
+const addContractor = async (id: string, contractorId: string) => {
+  const result = await Extermination.findByIdAndUpdate(
+    id,
+    { contractor: contractorId },
+    { new: true },
+  );
+  if (!result) throw new AppError(400, 'Failed to add contractor');
+  return result;
+};
+
 export const exterminationService = {
   exterminationCreate,
   getAllExtermination,
   getSingleExtermination,
   updateExtermination,
   deleteExtermination,
+  addContractor,
 };
