@@ -11,4 +11,5 @@ export interface IUser {
   otp?: string;
   otpExpiry?: Date;
   verified?: boolean;
+  stripeAccountId?: string;
 }

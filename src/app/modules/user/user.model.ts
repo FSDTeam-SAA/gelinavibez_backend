@@ -21,6 +21,7 @@ const userSchema = new mongoose.Schema<IUser>(
     otp: { type: String },
     otpExpiry: { type: Date },
     verified: { type: Boolean, default: true },
+    stripeAccountId: { type: String },
   },
   { timestamps: true },
 );

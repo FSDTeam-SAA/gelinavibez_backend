@@ -2,6 +2,7 @@ import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 import sendMailer from '../../helper/sendMailer';
+import Extermination from '../extermination/extermination.model';
 import User from '../user/user.model';
 import { IContractor } from './contractor.interface';
 import Contractor from './contractor.model';
@@ -146,10 +147,46 @@ const deleteContractor = async (id: string) => {
   return deletedContractor;
 };
 
+const getMyContractorAssignExtermination = async (
+  userId: string,
+  options: IOption,
+) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const contractor = await Contractor.findOne({ email: user.email });
+  if (!contractor)
+    throw new AppError(404, 'Contractor not found for this user');
+
+  const exterminations = await Extermination.find({
+    contractor: contractor._id,
+  })
+    .populate('user', 'firstName lastName email phone')
+    .sort({
+      [sortBy]: sortOrder,
+    } as any)
+    .skip(skip)
+    .limit(limit);
+
+  if (!exterminations) throw new AppError(400, 'Failed to get contact');
+
+  const total = await Extermination.countDocuments({
+    contractor: contractor._id,
+  });
+
+  return {
+    contractor,
+    exterminations,
+    meta: { total, page, limit },
+  };
+};
+
 export const contractorService = {
   createContractor,
   getAllContractor,
   getSingleContractor,
   updateContractor,
   deleteContractor,
+  getMyContractorAssignExtermination,
 };

@@ -16,6 +16,13 @@ const PaymentSchema = new Schema<IPayment>(
     stripePaymentIntentId: String,
     paymentDate: Date,
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+
+    // নতুন ফিল্ডগুলো যোগ করুন
+    contractor: { type: Schema.Types.ObjectId, ref: 'Contractor' },
+    extermination: { type: Schema.Types.ObjectId, ref: 'Extermination' },
+    service: { type: Schema.Types.ObjectId, ref: 'Service' },
+    apartmentName: String,
+    typeOfProblem: String,
   },
   { timestamps: true },
 );

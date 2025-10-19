@@ -73,10 +73,28 @@ const deleteContractor = catchAsync(async (req, res) => {
   });
 });
 
+const getMyContractorAssignExtermination = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await contractorService.getMyContractorAssignExtermination(
+    userId,
+    options,
+  );
+  const { meta, ...data } = result;
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Contractor fetched successfully',
+    meta: meta,
+    data: data,
+  });
+});
+
 export const contractorController = {
   createContractor,
   getAllContractor,
   getSingleContractor,
   updateContractor,
   deleteContractor,
+  getMyContractorAssignExtermination,
 };

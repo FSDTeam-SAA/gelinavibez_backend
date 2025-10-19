@@ -10,7 +10,9 @@ const app = express();
 // Middlewares
 app.use(cors({ origin: '*', credentials: true }));
 app.use(cookieParser());
+
 app.post('/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
