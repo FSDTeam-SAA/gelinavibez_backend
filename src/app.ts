@@ -5,12 +5,18 @@ import notFoundError from './app/error/notFoundError';
 import globalErrorHandler from './app/middlewares/globalErrorHandler';
 import router from './app/routes/routes';
 import stripeWebhook from './app/modules/payment/payment.webhook';
+// import { chargeController } from './app/modules/charge/charge.controller';
 const app = express();
 
 // Middlewares
 app.use(cors({ origin: '*', credentials: true }));
 app.use(cookieParser());
 
+// app.post(
+//   '/webhook',
+//   express.raw({ type: 'application/json' }),
+//   chargeController.stripeWebhook,
+// );
 app.post('/webhook', express.raw({ type: 'application/json' }), stripeWebhook);
 
 app.use(express.json());

@@ -23,6 +23,7 @@ const PaymentSchema = new Schema<IPayment>(
     service: { type: Schema.Types.ObjectId, ref: 'Service' },
     apartmentName: String,
     typeOfProblem: String,
+    chargeId:{ type: Schema.Types.ObjectId, ref: 'Charge' }
   },
   { timestamps: true },
 );

@@ -18,4 +18,5 @@ export interface IPayment extends Document {
   service?: Types.ObjectId; // কোন সার্ভিস টাইপ
   apartmentName?: string; // অ্যাপার্টমেন্টের নাম
   typeOfProblem?: string; // কী ধরনের সমস্যা
+  chargeId?: Types.ObjectId;
 }

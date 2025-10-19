@@ -90,6 +90,31 @@ const getMyContractorAssignExtermination = catchAsync(async (req, res) => {
   });
 });
 
+const createStripeAccount = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const result = await contractorService.createContractorStripeAccount(userId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: result.message,
+    data: { url: result.url },
+  });
+});
+
+// Dashboard লিংক নেবে
+const getStripeDashboardLink = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const result = await contractorService.getStripeDashboardLink(userId);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: result.message,
+    data: { url: result.url },
+  });
+});
+
 export const contractorController = {
   createContractor,
   getAllContractor,
@@ -97,4 +122,7 @@ export const contractorController = {
   updateContractor,
   deleteContractor,
   getMyContractorAssignExtermination,
+
+  createStripeAccount,
+  getStripeDashboardLink,
 };
