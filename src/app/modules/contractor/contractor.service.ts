@@ -1,8 +1,11 @@
+import Stripe from 'stripe';
+import config from '../../config';
 import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 import sendMailer from '../../helper/sendMailer';
 import Extermination from '../extermination/extermination.model';
+import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { IContractor } from './contractor.interface';
 import Contractor from './contractor.model';
@@ -182,6 +185,60 @@ const getMyContractorAssignExtermination = async (
   };
 };
 
+const stripe = new Stripe(config.stripe.secretKey!);
+
+/**
+ * ✅ Contractor Stripe Express Account তৈরি করা
+ */
+const createContractorStripeAccount = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+  if (user.role !== userRole.contractor)
+    throw new AppError(403, 'Only contractors can create a Stripe account');
+
+  // Stripe account create
+  if (!user.stripeAccountId) {
+    const account = await stripe.accounts.create({
+      type: 'express',
+      email: user.email,
+      business_type: 'individual',
+      metadata: { contractorId: userId },
+    });
+
+    user.stripeAccountId = account.id;
+    await user.save();
+  }
+
+  // Onboarding link তৈরি করা
+  const accountLink = await stripe.accountLinks.create({
+    account: user.stripeAccountId,
+    refresh_url: `${config.frontendUrl}/connect/refresh`,
+    return_url: `${config.frontendUrl}/stripe-account-success`,
+    type: 'account_onboarding',
+  });
+
+  return {
+    url: accountLink.url,
+    message: 'Stripe onboarding link created successfully',
+  };
+};
+
+/**
+ * ✅ Contractor Dashboard Login Link
+ */
+const getStripeDashboardLink = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user || !user.stripeAccountId)
+    throw new AppError(404, 'Stripe account not found');
+
+  const loginLink = await stripe.accounts.createLoginLink(user.stripeAccountId);
+
+  return {
+    url: loginLink.url,
+    message: 'Stripe dashboard link created successfully',
+  };
+};
+
 export const contractorService = {
   createContractor,
   getAllContractor,
@@ -189,4 +246,7 @@ export const contractorService = {
   updateContractor,
   deleteContractor,
   getMyContractorAssignExtermination,
+
+  createContractorStripeAccount,
+  getStripeDashboardLink,
 };

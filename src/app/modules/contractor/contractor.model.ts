@@ -28,11 +28,6 @@ const constractorSchema = new mongoose.Schema<IContractor>(
       required: true,
       unique: true,
     },
-    service: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Service',
-      required: true,
-    },
     serviceAreas: {
       type: String,
     },

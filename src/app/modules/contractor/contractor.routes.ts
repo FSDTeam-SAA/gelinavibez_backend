@@ -5,6 +5,20 @@ import auth from '../../middlewares/auth';
 import { userRole } from '../user/user.constant';
 const router = express.Router();
 
+// কন্ট্রাক্টর Stripe account তৈরি করবে
+router.post(
+  '/create-stripe-account',
+  auth(userRole.contractor),
+  contractorController.createStripeAccount,
+);
+
+// কন্ট্রাক্টর Stripe dashboard লিংক নেবে
+router.get(
+  '/dashboard-link',
+  auth(userRole.contractor),
+  contractorController.getStripeDashboardLink,
+);
+
 router.get(
   '/my-assign-extermination',
   auth(userRole.contractor),
