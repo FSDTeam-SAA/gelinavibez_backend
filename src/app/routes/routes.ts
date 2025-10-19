@@ -11,6 +11,7 @@ import { paymentRouter } from '../modules/payment/payment.routes';
 import { dashboardRouter } from '../modules/dashboard/dashboard.routes';
 import { subscribeRouter } from '../modules/subscribe/subscribe.routes';
 import { exterminationRouter } from '../modules/extermination/extermination.routes';
+import { chargeRoutes } from '../modules/charge/charge.routes';
 
 const router = Router();
 
@@ -62,6 +63,10 @@ const moduleRoutes = [
   {
     path: '/extermination',
     route: exterminationRouter,
+  },
+  {
+    path: '/charge',
+    route: chargeRoutes,
   },
 ];
 

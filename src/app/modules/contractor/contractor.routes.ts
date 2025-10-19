@@ -1,7 +1,15 @@
 import express from 'express';
 import { contractorController } from './contractor.controller';
 import { fileUploader } from '../../helper/fileUploder';
+import auth from '../../middlewares/auth';
+import { userRole } from '../user/user.constant';
 const router = express.Router();
+
+router.get(
+  '/my-assign-extermination',
+  auth(userRole.contractor),
+  contractorController.getMyContractorAssignExtermination,
+);
 
 router.post(
   '/',

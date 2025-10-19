@@ -1,0 +1,32 @@
+// charge.routes.ts
+import express from 'express';
+import { chargeController } from './charge.controller';
+import auth from '../../middlewares/auth';
+import { userRole } from '../user/user.constant';
+
+const router = express.Router();
+
+// কন্ট্রাক্টর চার্জ তৈরি করবে
+router.post('/', auth(userRole.contractor), chargeController.createCharge);
+
+
+// ইউজার তার চার্জগুলো দেখবে
+router.get('/my-charges', auth(userRole.user), chargeController.getMyCharges);
+
+// কন্ট্রাক্টর তার তৈরি করা চার্জগুলো দেখবে
+router.get(
+  '/my-contractor-charges',
+  auth(userRole.contractor),
+  chargeController.getMyContractorCharges,
+);
+
+// চার্জ ডিটেইল্স দেখবে
+router.get(
+  '/:chargeId',
+  auth(userRole.admin, userRole.user, userRole.contractor),
+  chargeController.getChargeDetail,
+);
+
+
+
+export const chargeRoutes = router;
