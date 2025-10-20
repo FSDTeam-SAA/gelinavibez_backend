@@ -17,6 +17,7 @@ const userSchema = new mongoose.Schema<IUser>(
     profileImage: { type: String },
     bio: { type: String },
     location: { type: String },
+    jobTitle: { type: String },
     phone: { type: String },
     otp: { type: String },
     otpExpiry: { type: Date },

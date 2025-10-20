@@ -8,6 +8,7 @@ export interface IUser {
   bio?: string;
   phone?: string;
   location?: string;
+  jobTitle?:string;
   otp?: string;
   otpExpiry?: Date;
   verified?: boolean;
