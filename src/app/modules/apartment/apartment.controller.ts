@@ -114,10 +114,10 @@ const getAllApartmentGroupByDay = catchAsync(async (req, res) => {
 });
 
 const updateApartmentStatus = catchAsync(async (req, res) => {
-  const result = await apartmentService.updateApartmentStatus(
-    req.params.id,
-    req.body.status,
-  );
+  const result = await apartmentService.updateApartmentStatus(req.params.id, {
+    status: req.body.status,
+  });
+
   sendResponse(res, {
     statusCode: 200,
     success: true,

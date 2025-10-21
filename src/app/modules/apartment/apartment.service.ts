@@ -227,7 +227,7 @@ const updateApartmentStatus = async (
   payload: { status: 'approve' | 'denied' },
 ) => {
   const result = await Apartment.findByIdAndUpdate(id, payload, { new: true });
-  if (!result) throw new AppError(404, 'apartment not found');
+  if (!result) throw new AppError(404, 'Apartment not found');
   return result;
 };
 
@@ -285,7 +285,7 @@ const getMyApartments = async (
     .sort({ [sortBy]: sortOrder } as any)
     .skip(skip)
     .limit(limit);
-  const total = await Apartment.countDocuments({ownerId,...whereCondition});
+  const total = await Apartment.countDocuments({ ownerId, ...whereCondition });
   return {
     meta: {
       page,
