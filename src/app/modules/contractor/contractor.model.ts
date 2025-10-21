@@ -47,6 +47,10 @@ const constractorSchema = new mongoose.Schema<IContractor>(
     image: {
       type: String,
     },
+    service: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Service',
+    },
   },
   { timestamps: true },
 );

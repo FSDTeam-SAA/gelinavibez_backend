@@ -1,3 +1,5 @@
+import { Types } from 'mongoose';
+
 export interface IContractor {
   companyName: string;
   CompanyAddress: string;
@@ -10,4 +12,5 @@ export interface IContractor {
   superContact: string;
   superName: string;
   image: string;
+  service: Types.ObjectId;
 }
