@@ -54,7 +54,8 @@ const getAllExtermination = async (params: any, options: IOption) => {
     } as any)
     .skip(skip)
     .limit(limit)
-    .populate('user', 'firstName lastName email profileImage role');
+    .populate('user', 'firstName lastName email profileImage role')
+    .populate('contractor');
 
   const total = await Extermination.countDocuments(whereCondition);
   return {
