@@ -1,9 +1,14 @@
 import express from 'express';
 import { subscribeController } from './subscribe.controller';
 import auth from '../../middlewares/auth';
+import { userRole } from '../user/user.constant';
 const router = express.Router();
 
-router.post('/broadcast',auth(), subscribeController.broadcastNewsletter);
+router.post(
+  '/broadcast',
+  auth(userRole.admin),
+  subscribeController.broadcastNewsletter,
+);
 router.post('/', subscribeController.createSubscrube);
 router.get('/', subscribeController.getAllSubscribe);
 router.get('/:id', subscribeController.getSingleSubscribe);
