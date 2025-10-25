@@ -10,4 +10,5 @@ export interface ICharge {
   dueDate?: Date;
   apartmentName: string;
   serviceType: string;
+  isPayment: boolean;
 }

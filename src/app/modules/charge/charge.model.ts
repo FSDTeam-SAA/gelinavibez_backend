@@ -42,6 +42,10 @@ const ChargeSchema = new Schema<ICharge>(
       type: String,
       required: true,
     },
+    isPayment: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true },
 );
