@@ -10,56 +10,124 @@ import User from '../user/user.model';
 import { IContractor } from './contractor.interface';
 import Contractor from './contractor.model';
 
+// const createContractor = async (
+//   payload: IContractor,
+//   file?: Express.Multer.File,
+// ) => {
+//   // Upload contractor image if provided
+//   if (file) {
+//     const uploaded = await fileUploader.uploadToCloudinary(file);
+//     payload.image = uploaded.secure_url;
+//   }
+
+//   // Create contractor in DB
+//   const contractor = await Contractor.create(payload);
+//   if (!contractor) {
+//     throw new AppError(400, 'Contractor not created');
+//   }
+
+//   // Generate random password for contractor login
+//   const generatedPassword = `${contractor.name.split(' ')[0].toLowerCase()}${Math.floor(
+//     Math.random() * 10000 + 1,
+//   )}`;
+
+//   // Create a linked user account
+//   const newUser = new User({
+//     firstName: contractor.name,
+//     lastName: '',
+//     email: contractor.email,
+//     phone: contractor.number,
+//     role: 'contractor',
+//     password: generatedPassword,
+//     profileImage: contractor.image,
+//   });
+
+//   await newUser.save();
+
+//   // Send email with credentials
+//   await sendMailer(
+//     contractor.email,
+//     'Contractor Account Created',
+//     `
+//       <h2>Welcome, ${contractor.name}</h2>
+//       <p>Your contractor account has been created successfully.</p>
+//       <p><strong>Login Email:</strong> ${contractor.email}</p>
+//       <p><strong>Password:</strong> ${generatedPassword}</p>
+//       <p>You can now log in using your credentials.</p>
+//       <p>Thank you for joining us!</p>
+//     `,
+//   );
+
+//   return contractor;
+// };
+
 const createContractor = async (
   payload: IContractor,
   file?: Express.Multer.File,
 ) => {
-  // Upload contractor image if provided
+  const existingUser = await User.findOne({ email: payload.email });
+
   if (file) {
     const uploaded = await fileUploader.uploadToCloudinary(file);
     payload.image = uploaded.secure_url;
   }
 
-  // Create contractor in DB
-  const contractor = await Contractor.create(payload);
-  if (!contractor) {
-    throw new AppError(400, 'Contractor not created');
+  const contractor = await Contractor.findOneAndUpdate(
+    { email: payload.email },
+    { $set: payload },
+    { new: true, upsert: true },
+  );
+
+  if (!contractor) throw new AppError(400, 'Contractor not created');
+
+  let generatedPassword: string | null = null;
+
+  if (!existingUser) {
+    generatedPassword = `${contractor.name
+      .split(' ')[0]
+      .toLowerCase()}${Math.floor(Math.random() * 10000 + 1)}`;
+
+    const newUser = new User({
+      firstName: contractor.name,
+      lastName: '',
+      email: contractor.email,
+      phone: contractor.number,
+      role: 'contractor',
+      password: generatedPassword,
+      profileImage: contractor.image,
+    });
+    await newUser.save();
+  } else {
+    existingUser.firstName = contractor.name;
+    existingUser.phone = contractor.number;
+    existingUser.role = 'contractor';
+    existingUser.profileImage = contractor.image;
+    await existingUser.save();
   }
 
-  // Generate random password for contractor login
-  const generatedPassword = `${contractor.name.split(' ')[0].toLowerCase()}${Math.floor(
-    Math.random() * 10000 + 1,
-  )}`;
+  let messageHtml = `
+    <h2>Welcome, ${contractor.name}</h2>
+    <p>Your contractor account is ${
+      existingUser ? 'updated' : 'created'
+    } successfully.</p>
+    <p><strong>Login Email:</strong> ${contractor.email}</p>
+  `;
 
-  // Create a linked user account
-  const newUser = new User({
-    firstName: contractor.name,
-    lastName: '',
-    email: contractor.email,
-    phone: contractor.number,
-    role: 'contractor',
-    password: generatedPassword,
-    profileImage: contractor.image,
-  });
+  if (generatedPassword) {
+    messageHtml += `<p><strong>Password:</strong> ${generatedPassword}</p>`;
+  }
 
-  await newUser.save();
+  messageHtml += `<p>You can now log in using your credentials.</p>`;
 
-  // Send email with credentials
   await sendMailer(
     contractor.email,
-    'Contractor Account Created',
-    `
-      <h2>Welcome, ${contractor.name}</h2>
-      <p>Your contractor account has been created successfully.</p>
-      <p><strong>Login Email:</strong> ${contractor.email}</p>
-      <p><strong>Password:</strong> ${generatedPassword}</p>
-      <p>You can now log in using your credentials.</p>
-      <p>Thank you for joining us!</p>
-    `,
+    'Contractor Account Created/Updated',
+    messageHtml,
   );
 
   return contractor;
 };
+
 
 const getAllContractor = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
