@@ -70,6 +70,7 @@ const createCharge = async (userId: string, payload: ICreateCharge) => {
       apartmentName: extermination.propertyAddress,
       serviceType: 'Extermination Service',
       status: 'pending',
+      isPayment: true,
     };
 
     const charge = await Charge.create([chargeData], { session });
