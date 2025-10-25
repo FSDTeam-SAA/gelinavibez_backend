@@ -5,8 +5,8 @@ export interface IExtermination {
   email: string;
   phoneNumber: string;
   propertyAddress: string;
-  typeOfProperty: 'Residential' | 'Commercial' | 'Multi-unit Building';
-  preferredContactMethod: 'Phone' | 'Email' | 'Text Message';
+  typeOfProperty: string[];
+  preferredContactMethod: string[];
 
   typeOfPestProblem: string[];
   locationOfProblem: string[];
@@ -15,7 +15,7 @@ export interface IExtermination {
   previousExterminationDate?: string;
 
   preferredServiceDate: string;
-  preferredTime: 'Morning' | 'Afternoon' | 'Evening';
+  preferredTime: string[];
   buildingAccessRequired: 'Yes' | 'No';
   contactInfo?: string;
 
