@@ -191,16 +191,14 @@ const getMyContractorAssignExtermination = async (
 ) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
 
-  // 1️⃣ Find user
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
 
-  // 2️⃣ Find contractor associated with this user
   const contractor = await Contractor.findOne({ email: user.email });
   if (!contractor)
     throw new AppError(404, 'Contractor not found for this user');
 
-  // 3️⃣ Fetch exterminations and populate charges
+
   const exterminations = await Extermination.find({ contractor: contractor._id })
     .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
     .skip(skip)
@@ -212,7 +210,7 @@ const getMyContractorAssignExtermination = async (
     })
     .lean(); // lean() returns plain JS objects instead of Mongoose documents
 
-  // 4️⃣ Total count
+
   const total = await Extermination.countDocuments({ contractor: contractor._id });
 
   return {

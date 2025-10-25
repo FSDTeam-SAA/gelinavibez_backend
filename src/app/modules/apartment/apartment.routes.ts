@@ -6,6 +6,7 @@ import { fileUploader } from '../../helper/fileUploder';
 const router = express.Router();
 
 router.get('/group-by-day', apartmentController.getAllApartmentGroupByDay);
+router.get('/locations', apartmentController.getAllApartmentLocations);
 
 // my apartment-------------------
 

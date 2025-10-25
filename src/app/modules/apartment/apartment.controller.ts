@@ -211,6 +211,18 @@ const deleteMyApartment = catchAsync(async (req, res) => {
   });
 });
 
+const getAllApartmentLocations = catchAsync(async (req, res) => {
+  const result = await apartmentService.getAllApartmentLocations();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Apartment locations fetched successfully',
+    data: result,
+  });
+});
+
+
 export const apartmentController = {
   createApartment,
   getAllApartment,
@@ -223,4 +235,5 @@ export const apartmentController = {
   getMySingleApartment,
   updateMyApartment,
   deleteMyApartment,
+  getAllApartmentLocations,
 };

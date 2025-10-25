@@ -359,6 +359,31 @@ const deleteMyApartment = async (ownerId: string, apartmentId: string) => {
   return { message: 'Apartment deleted successfully' };
 };
 
+
+const getAllApartmentLocations = async () => {
+  const locations = await Apartment.aggregate([
+    {
+      $group: {
+        _id: '$address.city',
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        city: '$_id',
+      },
+    },
+    {
+      $sort: { city: 1 },
+    },
+  ]);
+
+  return locations
+    .filter((loc) => loc.city) // null/empty remove
+    .map((loc) => loc.city);
+};
+
+
 export const apartmentService = {
   createApartment,
   getAllApartment,
@@ -371,4 +396,5 @@ export const apartmentService = {
   getMySingleApartment,
   updateMyApartment,
   deleteMyApartment,
+  getAllApartmentLocations,
 };
