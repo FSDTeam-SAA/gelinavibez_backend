@@ -12,6 +12,7 @@ import { dashboardRouter } from '../modules/dashboard/dashboard.routes';
 import { subscribeRouter } from '../modules/subscribe/subscribe.routes';
 import { exterminationRouter } from '../modules/extermination/extermination.routes';
 import { chargeRoutes } from '../modules/charge/charge.routes';
+import { tenantFreeRoutes } from '../modules/tenantFree/tenantFree.routes';
 
 const router = Router();
 
@@ -67,6 +68,10 @@ const moduleRoutes = [
   {
     path: '/charge',
     route: chargeRoutes,
+  },
+  {
+    path: '/tenantfree',
+    route: tenantFreeRoutes,
   },
 ];
 
