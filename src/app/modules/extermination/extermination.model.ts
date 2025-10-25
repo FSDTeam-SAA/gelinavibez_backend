@@ -8,16 +8,8 @@ const exterminationSchema = new Schema<IExtermination>(
     phoneNumber: { type: String, required: true },
     propertyAddress: { type: String, required: true },
 
-    typeOfProperty: {
-      type: String,
-      enum: ['Residential', 'Commercial', 'Multi-unit Building'],
-      required: true,
-    },
-    preferredContactMethod: {
-      type: String,
-      enum: ['Phone', 'Email', 'Text Message'],
-      required: true,
-    },
+    typeOfProperty: { type: [String], required: true },
+    preferredContactMethod: { type: [String], required: true },
 
     typeOfPestProblem: { type: [String], required: true },
     locationOfProblem: { type: [String], required: true },
@@ -31,11 +23,7 @@ const exterminationSchema = new Schema<IExtermination>(
     previousExterminationDate: { type: String },
 
     preferredServiceDate: { type: String, required: true },
-    preferredTime: {
-      type: String,
-      enum: ['Morning', 'Afternoon', 'Evening'],
-      required: true,
-    },
+    preferredTime: { type: [String], required: true },
     buildingAccessRequired: {
       type: String,
       enum: ['Yes', 'No'],
