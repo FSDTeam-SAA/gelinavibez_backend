@@ -8,6 +8,7 @@ import { fileUploader } from '../../helper/fileUploder';
 import sendMailer from '../../helper/sendMailer';
 import { ITenant } from './tanant.interface';
 import pagination, { IOption } from '../../helper/pagenation';
+import TenantFree from '../tenantFree/tenantFree.model';
 
 const stripe = new Stripe(config.stripe.secretKey!, {
   apiVersion: '2023-10-16' as any,
@@ -40,6 +41,9 @@ const createTenant = async (
     }
   }
 
+  const setting = await TenantFree.findOne();
+  const adminFee = setting?.applicationFee || 20;
+
   // Tenant create
   const tenant = await Tenant.create({ ...payload, createBy: user._id });
 
@@ -48,7 +52,7 @@ const createTenant = async (
     tenantId: tenant._id,
     tenantName: `${tenant.firstName} ${tenant.lastName}`,
     tenantEmail: tenant.email,
-    amount: 20,
+    amount: adminFee,
     user: user._id,
   });
 
@@ -63,7 +67,7 @@ const createTenant = async (
         price_data: {
           currency: 'usd',
           product_data: { name: 'Tenant Fee' },
-          unit_amount: 2000,
+          unit_amount: adminFee * 100,
         },
         quantity: 1,
       },
