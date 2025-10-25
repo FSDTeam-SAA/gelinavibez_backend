@@ -187,7 +187,7 @@ const deleteContractor = async (id: string) => {
 
 const getMyContractorAssignExtermination = async (
   userId: string,
-  options: IOption,
+  options: IOption
 ) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
 
@@ -200,56 +200,17 @@ const getMyContractorAssignExtermination = async (
   if (!contractor)
     throw new AppError(404, 'Contractor not found for this user');
 
-  // 3️⃣ Aggregation pipeline to include charges with isPayment
-  const exterminations = await Extermination.aggregate([
-    { $match: { contractor: contractor._id } },
-    { $sort: { [sortBy]: sortOrder === 'desc' ? -1 : 1 } },
-    { $skip: skip },
-    { $limit: limit },
-    // Lookup charges
-    {
-      $lookup: {
-        from: 'charges', // collection name in MongoDB
-        localField: '_id',
-        foreignField: 'extermination',
-        as: 'charges',
-      },
-    },
-    // Project fields
-    {
-      $project: {
-        fullName: 1,
-        email: 1,
-        phoneNumber: 1,
-        propertyAddress: 1,
-        typeOfProperty: 1,
-        preferredContactMethod: 1,
-        typeOfPestProblem: 1,
-        locationOfProblem: 1,
-        durationOfIssue: 1,
-        previousExterminationService: 1,
-        previousExterminationDate: 1,
-        preferredServiceDate: 1,
-        preferredTime: 1,
-        buildingAccessRequired: 1,
-        contactInfo: 1,
-        signature: 1,
-        date: 1,
-        status: 1,
-        user: 1,
-        contractor: 1,
-        charges: {
-          amount: 1,
-          description: 1,
-          status: 1,
-          dueDate: 1,
-          apartmentName: 1,
-          serviceType: 1,
-          isPayment: 1,
-        },
-      },
-    },
-  ]);
+  // 3️⃣ Fetch exterminations and populate charges
+  const exterminations = await Extermination.find({ contractor: contractor._id })
+    .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
+    .skip(skip)
+    .limit(limit)
+    .populate({
+      path: 'charges', // link to the charges collection
+      select: 'amount description status dueDate apartmentName serviceType isPayment',
+      model: 'Charge', // explicitly tell mongoose which model to use
+    })
+    .lean(); // lean() returns plain JS objects instead of Mongoose documents
 
   // 4️⃣ Total count
   const total = await Extermination.countDocuments({ contractor: contractor._id });
@@ -260,6 +221,8 @@ const getMyContractorAssignExtermination = async (
     meta: { total, page, limit },
   };
 };
+
+
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
