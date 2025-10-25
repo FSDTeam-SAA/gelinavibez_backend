@@ -150,33 +150,109 @@ const deleteContractor = async (id: string) => {
   return deletedContractor;
 };
 
+// const getMyContractorAssignExtermination = async (
+//   userId: string,
+//   options: IOption,
+// ) => {
+//   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+//   const user = await User.findById(userId);
+//   if (!user) throw new AppError(404, 'User not found');
+
+//   const contractor = await Contractor.findOne({ email: user.email });
+//   if (!contractor)
+//     throw new AppError(404, 'Contractor not found for this user');
+
+//   const exterminations = await Extermination.find({
+//     contractor: contractor._id,
+//   })
+//     .populate('user', 'firstName lastName email phone')
+//     .sort({
+//       [sortBy]: sortOrder,
+//     } as any)
+//     .skip(skip)
+//     .limit(limit);
+
+//   if (!exterminations) throw new AppError(400, 'Failed to get contact');
+
+//   const total = await Extermination.countDocuments({
+//     contractor: contractor._id,
+//   });
+
+//   return {
+//     contractor,
+//     exterminations,
+//     meta: { total, page, limit },
+//   };
+// };
+
 const getMyContractorAssignExtermination = async (
   userId: string,
   options: IOption,
 ) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+
+  // 1️⃣ Find user
   const user = await User.findById(userId);
   if (!user) throw new AppError(404, 'User not found');
 
+  // 2️⃣ Find contractor associated with this user
   const contractor = await Contractor.findOne({ email: user.email });
   if (!contractor)
     throw new AppError(404, 'Contractor not found for this user');
 
-  const exterminations = await Extermination.find({
-    contractor: contractor._id,
-  })
-    .populate('user', 'firstName lastName email phone')
-    .sort({
-      [sortBy]: sortOrder,
-    } as any)
-    .skip(skip)
-    .limit(limit);
+  // 3️⃣ Aggregation pipeline to include charges with isPayment
+  const exterminations = await Extermination.aggregate([
+    { $match: { contractor: contractor._id } },
+    { $sort: { [sortBy]: sortOrder === 'desc' ? -1 : 1 } },
+    { $skip: skip },
+    { $limit: limit },
+    // Lookup charges
+    {
+      $lookup: {
+        from: 'charges', // collection name in MongoDB
+        localField: '_id',
+        foreignField: 'extermination',
+        as: 'charges',
+      },
+    },
+    // Project fields
+    {
+      $project: {
+        fullName: 1,
+        email: 1,
+        phoneNumber: 1,
+        propertyAddress: 1,
+        typeOfProperty: 1,
+        preferredContactMethod: 1,
+        typeOfPestProblem: 1,
+        locationOfProblem: 1,
+        durationOfIssue: 1,
+        previousExterminationService: 1,
+        previousExterminationDate: 1,
+        preferredServiceDate: 1,
+        preferredTime: 1,
+        buildingAccessRequired: 1,
+        contactInfo: 1,
+        signature: 1,
+        date: 1,
+        status: 1,
+        user: 1,
+        contractor: 1,
+        charges: {
+          amount: 1,
+          description: 1,
+          status: 1,
+          dueDate: 1,
+          apartmentName: 1,
+          serviceType: 1,
+          isPayment: 1,
+        },
+      },
+    },
+  ]);
 
-  if (!exterminations) throw new AppError(400, 'Failed to get contact');
-
-  const total = await Extermination.countDocuments({
-    contractor: contractor._id,
-  });
+  // 4️⃣ Total count
+  const total = await Extermination.countDocuments({ contractor: contractor._id });
 
   return {
     contractor,

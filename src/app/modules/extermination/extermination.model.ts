@@ -58,6 +58,13 @@ const exterminationSchema = new Schema<IExtermination>(
     timestamps: true,
   },
 );
+
+exterminationSchema.virtual('charges', {
+  ref: 'Charge', // Model to use
+  localField: '_id', // Extermination _id
+  foreignField: 'extermination', // Charge.extermination references this
+});
+
 const Extermination = mongoose.model<IExtermination>(
   'Extermination',
   exterminationSchema,
