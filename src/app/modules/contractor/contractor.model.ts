@@ -11,22 +11,18 @@ const constractorSchema = new mongoose.Schema<IContractor>(
     CompanyAddress: {
       type: String,
       required: true,
-      unique: true,
     },
     name: {
       type: String,
       required: true,
-      unique: true,
     },
     number: {
       type: String,
       required: true,
-      unique: true,
     },
     email: {
       type: String,
       required: true,
-      unique: true,
     },
     serviceAreas: {
       type: String,

@@ -24,6 +24,9 @@ const callRequestSchema = new mongoose.Schema<ICallRequest>(
       type: String,
       required: true,
     },
+    addNode: {
+      type: String,
+    },
     createBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
