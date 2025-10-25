@@ -6,5 +6,6 @@ export interface ICallRequest {
   email: string;
   visiting: Types.ObjectId;
   phone: string;
+  addNode: string;
   createBy: Types.ObjectId;
 }
