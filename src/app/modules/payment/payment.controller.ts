@@ -23,6 +23,30 @@ const getAllPayment = catchAsync(async (req, res) => {
     data: result.data,
   });
 });
+const getMyAllPayment = catchAsync(async (req, res) => {
+  const filters = pick(req.query, [
+    'searchTerm',
+    'tenantName',
+    'tenantEmail',
+    'status',
+    'stripeSessionId',
+    'stripePaymentIntentId',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await paymentService.getMyAllPayment(
+    req.user?.id,
+    filters,
+    options,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Payment fetched successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
 
 const singlePayment = catchAsync(async (req, res) => {
   const { id } = req.params;
@@ -61,4 +85,5 @@ export const paymentController = {
   singlePayment,
   updatePayment,
   deletePayment,
+  getMyAllPayment,
 };
