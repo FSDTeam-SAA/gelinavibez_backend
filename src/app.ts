@@ -14,6 +14,7 @@ app.use(
     origin: [
       'http://localhost:3000',
       'https://gelinavibez-admindashboard.vercel.app',
+      'https://gelinavibez-frontend.vercel.app',
     ],
     credentials: true,
   }),
