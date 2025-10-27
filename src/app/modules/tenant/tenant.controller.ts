@@ -59,6 +59,31 @@ const getAllTenantApplication = catchAsync(async (req, res) => {
   });
 });
 
+const getMyAllTenantApplication = catchAsync(async (req, res) => {
+  const filters = pick(req.query, [
+    'searchTerm',
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'ssn',
+    'status',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await tenantService.getMyAllTenantApplication(
+    req.user?.id,
+    filters,
+    options,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Tenant applications',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 const getTenantApplication = catchAsync(async (req, res) => {
   const result = await tenantService.getTenantApplication(req.params.id);
   sendResponse(res, {
@@ -99,4 +124,5 @@ export const tenantController = {
   getTenantApplication,
   updateTenantApplication,
   deleteTenantApplication,
+  getMyAllTenantApplication,
 };
