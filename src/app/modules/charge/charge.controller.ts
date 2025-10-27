@@ -5,7 +5,6 @@ import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import pick from '../../helper/pick';
 
-
 // কন্ট্রাক্টর নতুন চার্জ তৈরি করবে
 const createCharge = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
@@ -29,7 +28,8 @@ const getMyCharges = catchAsync(async (req: Request, res: Response) => {
     statusCode: 200,
     success: true,
     message: 'User charges retrieved successfully',
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 
@@ -123,5 +123,5 @@ export const chargeController = {
   getMyContractorCharges,
   getChargeDetail,
   payCharge,
-//   stripeWebhook,
+  //   stripeWebhook,
 };
