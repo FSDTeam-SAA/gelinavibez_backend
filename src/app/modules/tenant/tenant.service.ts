@@ -9,6 +9,7 @@ import sendMailer from '../../helper/sendMailer';
 import { ITenant } from './tanant.interface';
 import pagination, { IOption } from '../../helper/pagenation';
 import TenantFree from '../tenantFree/tenantFree.model';
+import mongoose from 'mongoose';
 
 const stripe = new Stripe(config.stripe.secretKey!, {
   apiVersion: '2023-10-16' as any,
@@ -199,6 +200,70 @@ const getAllTenantApplication = async (params: any, options: IOption) => {
   };
 };
 
+const getMyAllTenantApplication = async (
+  userId: string,
+  params: any,
+  options: IOption,
+) => {
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    throw new AppError(400, 'Invalid user ID');
+  }
+
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const { page, skip, limit, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const addCondition: any[] = [];
+  const searchableFields = [
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'ssn',
+    'status',
+  ];
+
+  if (searchTerm) {
+    addCondition.push({
+      $or: searchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length) {
+    addCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const whereCondition = addCondition.length > 0 ? { $and: addCondition } : {};
+
+  const result = await Tenant.find({ ...whereCondition, createBy: user._id })
+    .sort({ [sortBy || 'createdAt']: sortOrder || 'desc' } as any)
+    .skip(skip)
+    .limit(limit)
+    .populate(
+      'apartmentId',
+      'title description aboutListing price bedrooms bathrooms squareFeet',
+    )
+    .populate('createBy', 'firstName lastName email profileImage role');
+
+  const total = await Tenant.countDocuments({
+    ...whereCondition,
+    createBy: user._id,
+  });
+
+  return {
+    meta: { total, page, limit },
+    data: result,
+  };
+};
+
 const getTenantApplication = async (tenantId: string) => {
   const tenant = await Tenant.findById(tenantId)
     .populate(
@@ -253,4 +318,5 @@ export const tenantService = {
   getTenantApplication,
   updateTenantApplication,
   deleteTenantApplication,
+  getMyAllTenantApplication,
 };
