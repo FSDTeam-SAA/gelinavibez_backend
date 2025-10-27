@@ -9,7 +9,20 @@ import stripeWebhook from './app/modules/payment/payment.webhook';
 const app = express();
 
 // Middlewares
+<<<<<<< HEAD
 app.use(cors({ origin: ['http://localhost:3000','http://localhost:3001'], credentials: true }));
+=======
+app.use(
+  cors({
+    origin: [
+      'http://localhost:3000',
+      'https://gelinavibez-admindashboard.vercel.app',
+      'https://gelinavibez-frontend.vercel.app',
+    ],
+    credentials: true,
+  }),
+);
+>>>>>>> 6d864d553c33daf63d2cc7882bc930e6c0cff0ae
 app.use(cookieParser());
 
 // app.post(
