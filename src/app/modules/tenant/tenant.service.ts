@@ -249,7 +249,7 @@ const getMyAllTenantApplication = async (
     .limit(limit)
     .populate(
       'apartmentId',
-      'title description aboutListing price bedrooms bathrooms squareFeet',
+      'title description aboutListing price bedrooms bathrooms squareFeet images',
     )
     .populate('createBy', 'firstName lastName email profileImage role');
 

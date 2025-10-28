@@ -81,7 +81,7 @@ const forgotPassword = async (email: string) => {
   await sendMailer(
     user.email,
     user.firstName + ' ' + user.lastName,
-    createOtpTemplate(otp, user.email, 'Your Company'),
+    createOtpTemplate(otp, user.email, 'Bridge Point Solution'),
   );
 
   return { message: 'OTP sent to your email' };
