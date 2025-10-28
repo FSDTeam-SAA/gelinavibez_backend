@@ -75,7 +75,7 @@ const forgotPassword = async (email: string) => {
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString();
   user.otp = otp;
-  user.otpExpiry = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+  user.otpExpiry = new Date(Date.now() + 20 * 60 * 1000); // 5 mins
   await user.save();
 
   await sendMailer(
