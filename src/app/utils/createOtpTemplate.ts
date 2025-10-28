@@ -1,7 +1,7 @@
 const createOtpTemplate = (
   code: string,
   email?: string,
-  companyName: string = 'Your Company',
+  companyName: string = 'Bridge Point Solution',
 ): string => `
   <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 20px auto; background-color: #f9fafb; padding: 24px;">
     <div style="background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.08);">
