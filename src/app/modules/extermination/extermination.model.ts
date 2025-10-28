@@ -35,7 +35,7 @@ const exterminationSchema = new Schema<IExtermination>(
     date: { type: String, required: true },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     contractor: { type: Schema.Types.ObjectId, ref: 'Contractor' },
-    // নতুন ফিল্ড যোগ করুন
+    // new fields
     status: {
       type: String,
       enum: ['pending', 'assigned', 'completed', 'paid'],

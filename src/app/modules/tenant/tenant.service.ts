@@ -281,7 +281,7 @@ const updateTenantApplication = async (
   payload: Partial<ITenant>,
   files?: Record<string, Express.Multer.File[]>,
 ) => {
-  // ফাইল আপলোড
+  // file upload
   if (files) {
     payload.uploads = {};
     const allowedUploadKeys = [
