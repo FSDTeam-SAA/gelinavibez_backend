@@ -1,7 +1,7 @@
 const createUserSuccessfully = (
     name?: string,
     email?: string,
-    companyName: string = "Your Company"
+    companyName: string = "Bridge Point Solution"
   ): string => `
     <div style="font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 620px; margin: auto; background-color: #f3f4f6; padding: 30px;">
       <div style="background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
