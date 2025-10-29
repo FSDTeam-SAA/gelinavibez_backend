@@ -11,12 +11,7 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      'https://gelinavibez-admindashboard.vercel.app',
-      'https://gelinavibez-frontend.vercel.app',
-    ],
+    origin: ["http://localhost:3000", "http://localhost:3001"],
     credentials: true,
   }),
 );
