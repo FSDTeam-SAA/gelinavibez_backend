@@ -191,7 +191,8 @@ const getAllTenantApplication = async (params: any, options: IOption) => {
       'apartmentId',
       'title description aboutListing price bedrooms bathrooms squareFeet',
     )
-    .populate('createBy', 'firstName lastName email profileImage role');
+    .populate('createBy', 'firstName lastName email profileImage role')
+    .populate('paymentId', 'tenantId tenantName tenantEmail amount user status');
 
   const total = await Tenant.countDocuments(whereCondition);
   return {
@@ -280,7 +281,7 @@ const updateTenantApplication = async (
   payload: Partial<ITenant>,
   files?: Record<string, Express.Multer.File[]>,
 ) => {
-  // ফাইল আপলোড
+  // file upload
   if (files) {
     payload.uploads = {};
     const allowedUploadKeys = [

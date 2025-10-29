@@ -17,7 +17,7 @@ const PaymentSchema = new Schema<IPayment>(
     paymentDate: Date,
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 
-    // নতুন ফিল্ডগুলো যোগ করুন
+    // new fields
     contractor: { type: Schema.Types.ObjectId, ref: 'Contractor' },
     extermination: { type: Schema.Types.ObjectId, ref: 'Extermination' },
     service: { type: Schema.Types.ObjectId, ref: 'Service' },
