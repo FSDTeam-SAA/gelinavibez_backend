@@ -12,6 +12,8 @@ import pagination, { IOption } from '../../helper/pagenation';
 import Stripe from 'stripe';
 import config from '../../config';
 import { Payment } from '../payment/payment.model';
+import sendMailer from '../../helper/sendMailer';
+import dayjs from 'dayjs';
 
 interface ICreateCharge {
   exterminationId: string;
@@ -90,7 +92,7 @@ const getUserCharges = async (userId: string, options: IOption) => {
   const { sortBy, sortOrder, page, limit, skip } = pagination(options);
   const charges = await Charge.find({
     user: userId,
-    status: 'pending',
+    // status: '',
   })
     .populate('contractor', 'companyName name email phone')
     .populate(
@@ -231,12 +233,36 @@ const payCharge = async (userId: string, chargeId: string) => {
     chargeId: charge._id,
   });
 
+
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f6f6f6;">
+      <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px;">
+        <h2 style="color: #007bff;">Service Payment Notification</h2>
+        <p>Dear ${contractor.firstName || 'Contractor'},</p>
+        <p>A new payment has been initiated for your service:</p>
+        <ul style="line-height: 1.6;">
+          <li><strong>Apartment:</strong> ${charge.apartmentName}</li>
+          <li><strong>Service Type:</strong> ${charge.serviceType}</li>
+          <li><strong>Amount:</strong> $${charge.amount}</li>
+          <li><strong>Status:</strong> Pending</li>
+          <li><strong>Due Date:</strong> ${charge.dueDate ? dayjs(charge.dueDate).format('MMM D, YYYY') : 'N/A'}</li>
+        </ul>
+        <p>You will receive another email once the payment is confirmed.</p>
+        <br/>
+        <p style="color: #666;">— Bridge Point Solution</p>
+      </div>
+    </div>
+  `
+
+  sendMailer((charge.contractor as any)?.email,
+    'Service Payment Notification',
+    htmlBody,);
+
   return { url: session.url };
 };
 
 export const chargeService = {
   createCharge,
-
   getUserCharges,
   getContractorCharges,
   getChargeById,
