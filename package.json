@@ -6,14 +6,11 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start:prod": "node ./dist/server.js",
-    "start:dev": "ts-node-dev --respawn --transpile-only src/server.ts",
+    "start:prod": "node dist/server.js",
+    "start": "npm run start:prod",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\"",
-    "prettier:fix": "prettier --write src",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build-and-start": "npm run build && npm run start:prod"
+    "prettier": "prettier --write \"src/**/*.{js,ts,json}\""
   },
   "keywords": [],
   "author": "",
