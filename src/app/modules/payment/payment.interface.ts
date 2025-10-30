@@ -6,6 +6,8 @@ export interface IPayment extends Document {
   tenantName: string;
   tenantEmail: string;
   amount: number;
+  adminFree?: number;
+  contractorFree?: number;
   status: 'pending' | 'approved' | 'denied';
   stripeSessionId?: string;
   stripePaymentIntentId?: string;
