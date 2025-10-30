@@ -223,6 +223,8 @@ const payCharge = async (userId: string, chargeId: string) => {
     tenantName: `${user.firstName} ${user.lastName}`,
     tenantEmail: user.email,
     amount: charge.amount,
+    adminFree: adminShare,
+    contractorFree: contractorShare,
     status: 'pending',
     stripeSessionId: session.id,
     user: user._id,
@@ -232,7 +234,6 @@ const payCharge = async (userId: string, chargeId: string) => {
     typeOfProblem: charge.serviceType,
     chargeId: charge._id,
   });
-
 
   const htmlBody = `
     <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f6f6f6;">
@@ -244,7 +245,9 @@ const payCharge = async (userId: string, chargeId: string) => {
           <li><strong>Apartment:</strong> ${charge.apartmentName}</li>
           <li><strong>Service Type:</strong> ${charge.serviceType}</li>
           <li><strong>Amount:</strong> $${charge.amount}</li>
-          <li><strong>Status:</strong> Pending</li>
+          <li><strong>Admin Share:</strong> $${adminShare}</li>
+          <li><strong>Contractor Share:</strong> $${contractorShare}</li>
+          <li><strong>Status:</strong> ${charge.status}</li>
           <li><strong>Due Date:</strong> ${charge.dueDate ? dayjs(charge.dueDate).format('MMM D, YYYY') : 'N/A'}</li>
         </ul>
         <p>You will receive another email once the payment is confirmed.</p>
@@ -252,11 +255,13 @@ const payCharge = async (userId: string, chargeId: string) => {
         <p style="color: #666;">— Bridge Point Solution</p>
       </div>
     </div>
-  `
+  `;
 
-  sendMailer((charge.contractor as any)?.email,
+  sendMailer(
+    (charge.contractor as any)?.email,
     'Service Payment Notification',
-    htmlBody,);
+    htmlBody,
+  );
 
   return { url: session.url };
 };
