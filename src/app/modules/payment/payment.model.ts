@@ -7,6 +7,8 @@ const PaymentSchema = new Schema<IPayment>(
     tenantName: { type: String, required: true },
     tenantEmail: { type: String, required: true },
     amount: { type: Number, default: 20 },
+    adminFree: { type: Number },
+    contractorFree: { type: Number },
     status: {
       type: String,
       enum: ['pending', 'approved', 'denied'],
@@ -23,7 +25,7 @@ const PaymentSchema = new Schema<IPayment>(
     service: { type: Schema.Types.ObjectId, ref: 'Service' },
     apartmentName: String,
     typeOfProblem: String,
-    chargeId:{ type: Schema.Types.ObjectId, ref: 'Charge' }
+    chargeId: { type: Schema.Types.ObjectId, ref: 'Charge' },
   },
   { timestamps: true },
 );
