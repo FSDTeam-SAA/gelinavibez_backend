@@ -5,6 +5,12 @@ import { tenantController } from './tenant.controller';
 import { fileUploader } from '../../helper/fileUploder';
 const router = express.Router();
 
+router.get(
+  '/my',
+  auth(userRole.user),
+  tenantController.getMyAllTenantApplication,
+);
+
 router.post(
   '/',
   auth(userRole.user),

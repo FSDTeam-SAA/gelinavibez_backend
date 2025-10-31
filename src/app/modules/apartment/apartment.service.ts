@@ -169,7 +169,7 @@ const getAllApartmentGroupByDay = async (params: any, options: IOption) => {
 
   const andCondition: any[] = [];
 
-  // 🔍 Search term
+  // Search term
   if (searchTerm) {
     andCondition.push({
       $or: searchableFields.map((field) => {
@@ -183,7 +183,7 @@ const getAllApartmentGroupByDay = async (params: any, options: IOption) => {
     });
   }
 
-  // 🎯 Filters
+  // Filters
   if (Object.keys(filterData).length) {
     andCondition.push({
       $and: Object.entries(filterData).map(([field, value]) => ({
@@ -194,7 +194,7 @@ const getAllApartmentGroupByDay = async (params: any, options: IOption) => {
 
   const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
 
-  // 📦 Group by Day
+  // Group by Day
   const result = await Apartment.aggregate([
     { $match: whereCondition },
     { $sort: { [sortBy || 'createdAt']: sortOrder === 'asc' ? 1 : -1 } },
@@ -233,7 +233,7 @@ const updateApartmentStatus = async (
 
 // my apartment-------------------
 
-// ✅ Get All My Apartments
+// Get All My Apartments
 const getMyApartments = async (
   ownerId: string,
   params: any,
@@ -257,7 +257,7 @@ const getMyApartments = async (
 
   const andCondition: any[] = [];
 
-  // 🔍 Search term
+  // Search term
   if (searchTerm) {
     andCondition.push({
       $or: searchableFields.map((field) => {
@@ -271,7 +271,7 @@ const getMyApartments = async (
     });
   }
 
-  // 🎯 Filters
+  // Filters
   if (Object.keys(filterData).length) {
     andCondition.push({
       $and: Object.entries(filterData).map(([field, value]) => ({
@@ -296,7 +296,7 @@ const getMyApartments = async (
   };
 };
 
-// ✅ Get Single Apartment (own)
+// Get Single Apartment (own)
 const getMySingleApartment = async (
   ownerId: string,
   apartmentId: string,
@@ -308,7 +308,7 @@ const getMySingleApartment = async (
   return apartment;
 };
 
-// ✅ Update Apartment (own)
+// Update Apartment (own)
 const updateMyApartment = async (
   ownerId: string,
   apartmentId: string,
@@ -348,7 +348,7 @@ const updateMyApartment = async (
   return updated;
 };
 
-// ✅ Delete Apartment (own)
+// Delete Apartment (own)
 const deleteMyApartment = async (ownerId: string, apartmentId: string) => {
   const apartment = await Apartment.findOne({ _id: apartmentId, ownerId });
   if (!apartment) {

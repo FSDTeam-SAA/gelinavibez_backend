@@ -16,7 +16,7 @@ const sendMailer = async (
     },
   });
   const info = await transporter.sendMail({
-    from: `"your company name" ${config.email.from}`,
+    from: `"Bridge Point Solution" ${config.email.from}`,
     to: email,
     subject,
     html,
