@@ -18,7 +18,6 @@ app.use(
       'https://admin.mybridgepointsolutions.com',
     ],
     credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
 app.use(cookieParser());
