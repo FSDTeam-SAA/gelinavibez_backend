@@ -12,6 +12,8 @@ import pagination, { IOption } from '../../helper/pagenation';
 import Stripe from 'stripe';
 import config from '../../config';
 import { Payment } from '../payment/payment.model';
+import sendMailer from '../../helper/sendMailer';
+import dayjs from 'dayjs';
 
 interface ICreateCharge {
   exterminationId: string;
@@ -90,7 +92,7 @@ const getUserCharges = async (userId: string, options: IOption) => {
   const { sortBy, sortOrder, page, limit, skip } = pagination(options);
   const charges = await Charge.find({
     user: userId,
-    status: 'pending',
+    // status: '',
   })
     .populate('contractor', 'companyName name email phone')
     .populate(
@@ -215,12 +217,18 @@ const payCharge = async (userId: string, chargeId: string) => {
     },
   });
 
+  // Convert back to dollars for email
+  const adminShareDollars = (adminShare / 100).toFixed(2);
+  const contractorShareDollars = (contractorShare / 100).toFixed(2);
+
   // ✅ Payment entry তৈরি
   await Payment.create({
     tenantId: user._id,
     tenantName: `${user.firstName} ${user.lastName}`,
     tenantEmail: user.email,
     amount: charge.amount,
+    adminFree: adminShareDollars,
+    contractorFree: contractorShareDollars,
     status: 'pending',
     stripeSessionId: session.id,
     user: user._id,
@@ -231,12 +239,37 @@ const payCharge = async (userId: string, chargeId: string) => {
     chargeId: charge._id,
   });
 
+  const htmlBody = `
+  <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f6f6f6;">
+    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px;">
+      <h2 style="color: #007bff;">Service Payment Notification</h2>
+      <p>Dear ${contractor.firstName || 'Contractor'},</p>
+      <p>A new payment request has been initiated for your service:</p>
+      <ul style="line-height: 1.6;">
+        <li><strong>Apartment:</strong> ${charge.apartmentName}</li>
+        <li><strong>Service Type:</strong> ${charge.serviceType}</li>
+        <li><strong>Amount:</strong> $${charge.amount}</li>
+        <li><strong>Admin Share:</strong> $${adminShareDollars}</li>
+        <li><strong>Contractor Share:</strong> $${contractorShareDollars}</li>
+      </ul>
+      <p>Once the tenant completes the payment, you will receive another confirmation email.</p>
+      <br/>
+      <p style="color: #666;">— Bridge Point Solution</p>
+    </div>
+  </div>
+`;
+
+  sendMailer(
+    (charge.contractor as any)?.email,
+    'Service Payment Notification',
+    htmlBody,
+  );
+
   return { url: session.url };
 };
 
 export const chargeService = {
   createCharge,
-
   getUserCharges,
   getContractorCharges,
   getChargeById,

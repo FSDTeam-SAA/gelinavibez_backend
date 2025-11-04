@@ -7,6 +7,8 @@ const PaymentSchema = new Schema<IPayment>(
     tenantName: { type: String, required: true },
     tenantEmail: { type: String, required: true },
     amount: { type: Number, default: 20 },
+    adminFree: { type: Number },
+    contractorFree: { type: Number },
     status: {
       type: String,
       enum: ['pending', 'approved', 'denied'],
@@ -17,13 +19,13 @@ const PaymentSchema = new Schema<IPayment>(
     paymentDate: Date,
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
 
-    // নতুন ফিল্ডগুলো যোগ করুন
+    // new fields
     contractor: { type: Schema.Types.ObjectId, ref: 'Contractor' },
     extermination: { type: Schema.Types.ObjectId, ref: 'Extermination' },
     service: { type: Schema.Types.ObjectId, ref: 'Service' },
     apartmentName: String,
     typeOfProblem: String,
-    chargeId:{ type: Schema.Types.ObjectId, ref: 'Charge' }
+    chargeId: { type: Schema.Types.ObjectId, ref: 'Charge' },
   },
   { timestamps: true },
 );

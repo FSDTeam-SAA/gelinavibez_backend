@@ -5,10 +5,11 @@ import { apartmentService } from './apartment.service';
 
 const createApartment = catchAsync(async (req, res) => {
   const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+
   const images = files?.images;
   const videos = files?.videos;
   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
-
+  console.log(fromData, 'fromData');
   const result = await apartmentService.createApartment(
     req.user.id,
     fromData,
