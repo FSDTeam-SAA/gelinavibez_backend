@@ -12,6 +12,8 @@ const app = express();
 app.use(
   cors({
     origin: [
+      'https://gelinavibez-frontend.vercel.app',
+      'https://gelinavibez-admindashboard.vercel.app',
       'http://localhost:3000',
       'http://localhost:3001',
       'https://mybridgepointsolutions.com',
