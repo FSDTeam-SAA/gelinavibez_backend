@@ -11,8 +11,14 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001","https://mybridgepointsolutions.com","https://admin.mybridgepointsolutions.com"],
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://mybridgepointsolutions.com',
+      'https://admin.mybridgepointsolutions.com',
+    ],
     credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
   }),
 );
 app.use(cookieParser());
