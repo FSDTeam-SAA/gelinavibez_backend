@@ -100,6 +100,16 @@ const allRequestAdmin = catchAsync(async (req, res) => {
   });
 });
 
+const deleteAdmin = catchAsync(async (req, res) => {
+  const result = await userService.deleteAdmin(req.params.id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Admin request deleted successfully',
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getAllUser,
@@ -110,4 +120,5 @@ export const userController = {
   requestAdmin,
   updateAdmin,
   allRequestAdmin,
+  deleteAdmin,
 };

@@ -33,6 +33,11 @@ router.put(
   auth(userRole.superadmin),
   userController.updateAdmin,
 );
+router.delete(
+  '/delete-admin/:id',
+  auth(userRole.superadmin),
+  userController.deleteAdmin,
+);
 router.get(
   '/all-request-admin',
   auth(userRole.superadmin),
