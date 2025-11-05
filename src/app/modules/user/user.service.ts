@@ -147,7 +147,6 @@ const allRequestAdmin = async (params: any, options: IOption) => {
   };
 };
 
-
 const updateAdmin = async (userId: string) => {
   const user = await User.findById(userId);
   if (!user) {
