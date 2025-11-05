@@ -16,19 +16,44 @@ router.post(
 
 router.get(
   '/profile',
-  auth(userRole.admin, userRole.contractor, userRole.user),
+  auth(userRole.admin, userRole.contractor, userRole.user, userRole.superadmin),
   userController.profile,
 );
 router.put(
   '/profile',
-  auth(userRole.admin, userRole.contractor, userRole.user),
+  auth(userRole.admin, userRole.contractor, userRole.user, userRole.superadmin),
   fileUploader.upload.single('profileImage'),
   userController.updateUserById,
 );
 
-router.get('/all-user', auth(userRole.admin), userController.getAllUser);
-router.get('/:id', auth(userRole.admin), userController.getUserById);
+// request admin
+router.post('/request-admin', auth(userRole.user), userController.requestAdmin);
+router.put(
+  '/update-admin/:id',
+  auth(userRole.superadmin),
+  userController.updateAdmin,
+);
+router.get(
+  '/all-request-admin',
+  auth(userRole.superadmin),
+  userController.allRequestAdmin,
+);
 
-router.delete('/:id', auth(userRole.admin), userController.deleteUserById);
+router.get(
+  '/all-user',
+  auth(userRole.admin, userRole.superadmin),
+  userController.getAllUser,
+);
+router.get(
+  '/:id',
+  auth(userRole.admin, userRole.superadmin),
+  userController.getUserById,
+);
+
+router.delete(
+  '/:id',
+  auth(userRole.admin, userRole.superadmin),
+  userController.deleteUserById,
+);
 
 export const userRoutes = router;
