@@ -108,6 +108,7 @@ const allRequestAdmin = async (params: any, options: IOption) => {
   const andCondition: any[] = [];
   const userSearchableFields = ['firstName', 'lastName', 'email', 'role'];
 
+  // 🔍 Search condition
   if (searchTerm) {
     andCondition.push({
       $or: userSearchableFields.map((field) => ({
@@ -116,6 +117,7 @@ const allRequestAdmin = async (params: any, options: IOption) => {
     });
   }
 
+  // 🎯 Filters (role, verified, etc.)
   if (Object.keys(filterData).length) {
     andCondition.push({
       $and: Object.entries(filterData).map(([field, value]) => ({
@@ -124,14 +126,20 @@ const allRequestAdmin = async (params: any, options: IOption) => {
     });
   }
 
-  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+  // ✅ Show users who are either "admin" OR have requested admin access
+  const whereCondition =
+    andCondition.length > 0
+      ? { $and: [...andCondition, { $or: [{ role: 'admin' }, { requestAdmin: true }] }] }
+      : { $or: [{ role: 'admin' }, { requestAdmin: true }] };
 
-  const result = await User.find({ ...whereCondition, requestAdmin: true })
+  // 🔹 Fetch results
+  const result = await User.find(whereCondition)
     .skip(skip)
     .limit(limit)
     .sort({ [sortBy]: sortOrder } as any);
 
-  const total = await User.countDocuments({ requestAdmin: true });
+  // 🔹 Total count
+  const total = await User.countDocuments(whereCondition);
 
   return {
     meta: { total, page, limit },
