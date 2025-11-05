@@ -2,7 +2,6 @@ import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 
-
 import { IUser } from './user.interface';
 import User from './user.model';
 
@@ -88,7 +87,6 @@ const profile = async (id: string) => {
   return result;
 };
 
-
 const requestAdmin = async (userId: string) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -97,12 +95,11 @@ const requestAdmin = async (userId: string) => {
   const result = await User.findByIdAndUpdate(
     userId,
     { requestAdmin: true },
-    { new: true }
+    { new: true },
   );
 
   return result;
 };
-
 
 const allRequestAdmin = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
@@ -142,7 +139,6 @@ const allRequestAdmin = async (params: any, options: IOption) => {
   };
 };
 
-
 const updateAdmin = async (userId: string) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -162,6 +158,24 @@ const updateAdmin = async (userId: string) => {
   return result;
 };
 
+const deleteAdmin = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
+
+  const result = await User.findByIdAndUpdate(
+    userId,
+    { role: 'user', requestAdmin: false },
+    { new: true },
+  );
+
+  if (!result) {
+    throw new AppError(400, 'Something went wrong');
+  }
+
+  return result;
+};
 
 export const userService = {
   createUser,
@@ -173,4 +187,5 @@ export const userService = {
   requestAdmin,
   updateAdmin,
   allRequestAdmin,
+  deleteAdmin,
 };
