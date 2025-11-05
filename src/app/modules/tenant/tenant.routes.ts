@@ -23,17 +23,17 @@ router.post(
   tenantController.createTenant,
 );
 
-router.get('/', auth(userRole.admin), tenantController.getAllTenantApplication);
+router.get('/', auth(userRole.admin,userRole.superadmin), tenantController.getAllTenantApplication);
 
 router.get(
   '/:id',
-  auth(userRole.admin, userRole.user),
+  auth(userRole.admin, userRole.user,userRole.superadmin),
   tenantController.getTenantApplication,
 );
 
 router.put(
   '/:id',
-  auth(userRole.user, userRole.admin),
+  auth(userRole.user, userRole.admin,userRole.superadmin),
   fileUploader.upload.fields([
     { name: 'idCard', maxCount: 1 },
     { name: 'ssnDoc', maxCount: 1 },
@@ -45,15 +45,15 @@ router.put(
 
 router.delete(
   '/:id',
-  auth(userRole.user, userRole.admin),
+  auth(userRole.user, userRole.admin,userRole.superadmin),
   tenantController.deleteTenantApplication,
 );
 
 router.patch(
   '/:id/approve',
-  auth(userRole.admin),
+  auth(userRole.admin,userRole.superadmin),
   tenantController.approveTenant,
 );
-router.patch('/:id/deny', auth(userRole.admin), tenantController.denyTenant);
+router.patch('/:id/deny', auth(userRole.admin,userRole.superadmin), tenantController.denyTenant);
 
 export const tenantRouter = router;

@@ -15,7 +15,7 @@ const createApartment = async (
   const user = await User.findById(ownerId);
   if (!user) throw new AppError(404, 'user not found');
 
-  if (user.role === userRole.admin) {
+  if (user.role === userRole.admin || user.role === userRole.superadmin) {
     payload.status = 'approve';
   }
   if (images && images.length > 0) {

@@ -12,17 +12,17 @@ router.get('/locations', apartmentController.getAllApartmentLocations);
 
 router.get(
   '/my-apartments',
-  auth(userRole.admin, userRole.user, userRole.contractor),
+  auth(userRole.admin, userRole.user, userRole.contractor,userRole.superadmin),
   apartmentController.getMyApartments,
 );
 router.get(
   '/my-apartments/:id',
-  auth(userRole.admin, userRole.user, userRole.contractor),
+  auth(userRole.admin, userRole.user, userRole.contractor,userRole.superadmin),
   apartmentController.getMySingleApartment,
 );
 router.put(
   '/my-apartments/:id',
-  auth(userRole.admin, userRole.user, userRole.contractor),
+  auth(userRole.admin, userRole.user, userRole.contractor,userRole.superadmin),
   fileUploader.upload.fields([
     { name: 'images', maxCount: 10 },
     { name: 'videos', maxCount: 5 },
@@ -31,7 +31,7 @@ router.put(
 );
 router.delete(
   '/my-apartments/:id',
-  auth(userRole.admin, userRole.user, userRole.contractor),
+  auth(userRole.admin, userRole.user, userRole.contractor,userRole.superadmin),
   apartmentController.deleteMyApartment,
 );
 
@@ -39,7 +39,7 @@ router.delete(
 
 router.post(
   '/',
-  auth(userRole.admin, userRole.user, userRole.contractor),
+  auth(userRole.admin, userRole.user, userRole.contractor,userRole.superadmin),
   fileUploader.upload.fields([
     { name: 'images', maxCount: 10 },
     { name: 'videos', maxCount: 5 },
@@ -50,14 +50,14 @@ router.get('/', apartmentController.getAllApartment);
 
 router.put(
   '/:id/status',
-  auth(userRole.admin),
+  auth(userRole.admin,userRole.superadmin),
   apartmentController.updateApartmentStatus,
 );
 
 router.get('/:id', apartmentController.singleApartment);
 router.put(
   '/:id',
-  auth(userRole.admin, userRole.user, userRole.contractor),
+  auth(userRole.admin, userRole.user, userRole.contractor,userRole.superadmin),
   fileUploader.upload.fields([
     { name: 'images', maxCount: 10 },
     { name: 'videos', maxCount: 5 },
@@ -66,7 +66,7 @@ router.put(
 );
 router.delete(
   '/:id',
-  auth(userRole.admin),
+  auth(userRole.admin,userRole.superadmin),
   apartmentController.deleteApartment,
 );
 

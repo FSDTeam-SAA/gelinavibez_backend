@@ -11,7 +11,14 @@ const app = express();
 // Middlewares
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001","https://mybridgepointsolutions.com","https://admin.mybridgepointsolutions.com"],
+    origin: [
+      'https://gelinavibez-frontend.vercel.app',
+      'https://gelinavibez-admindashboard.vercel.app',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://mybridgepointsolutions.com',
+      'https://admin.mybridgepointsolutions.com',
+    ],
     credentials: true,
   }),
 );

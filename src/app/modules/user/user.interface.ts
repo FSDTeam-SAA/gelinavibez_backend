@@ -3,14 +3,15 @@ export interface IUser {
   lastName?: string;
   email: string;
   password: string;
-  role: 'admin' | 'user' | 'contractor';
+  role: 'admin' | 'user' | 'contractor' | 'superadmin';
   profileImage?: string;
   bio?: string;
   phone?: string;
   location?: string;
-  jobTitle?:string;
+  jobTitle?: string;
   otp?: string;
   otpExpiry?: Date;
   verified?: boolean;
   stripeAccountId?: string;
+  requestAdmin?: boolean;
 }
