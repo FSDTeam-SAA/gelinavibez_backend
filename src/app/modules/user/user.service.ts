@@ -2,6 +2,7 @@ import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
 
+
 import { IUser } from './user.interface';
 import User from './user.model';
 
@@ -87,6 +88,81 @@ const profile = async (id: string) => {
   return result;
 };
 
+
+const requestAdmin = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
+  const result = await User.findByIdAndUpdate(
+    userId,
+    { requestAdmin: true },
+    { new: true }
+  );
+
+  return result;
+};
+
+
+const allRequestAdmin = async (params: any, options: IOption) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const andCondition: any[] = [];
+  const userSearchableFields = ['firstName', 'lastName', 'email', 'role'];
+
+  if (searchTerm) {
+    andCondition.push({
+      $or: userSearchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  const result = await User.find({ ...whereCondition, requestAdmin: true })
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  const total = await User.countDocuments({ requestAdmin: true });
+
+  return {
+    meta: { total, page, limit },
+    data: result,
+  };
+};
+
+
+const updateAdmin = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
+
+  const result = await User.findByIdAndUpdate(
+    userId,
+    { role: 'admin', requestAdmin: false },
+    { new: true },
+  );
+
+  if (!result) {
+    throw new AppError(400, 'Something went wrong');
+  }
+
+  return result;
+};
+
+
 export const userService = {
   createUser,
   getAllUser,
@@ -94,4 +170,7 @@ export const userService = {
   updateUserById,
   deleteUserById,
   profile,
+  requestAdmin,
+  updateAdmin,
+  allRequestAdmin,
 };

@@ -25,7 +25,7 @@ router.get(
 // চার্জ ডিটেইল্স দেখবে
 router.get(
   '/:chargeId',
-  auth(userRole.admin, userRole.user, userRole.contractor),
+  auth(userRole.admin, userRole.user, userRole.contractor,userRole.superadmin),
   chargeController.getChargeDetail,
 );
 

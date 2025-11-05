@@ -69,6 +69,37 @@ const profile = catchAsync(async (req, res) => {
   });
 });
 
+const requestAdmin = catchAsync(async (req, res) => {
+  const result = await userService.requestAdmin(req.user.id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Admin request sent successfully',
+    data: result,
+  });
+});
+
+const updateAdmin = catchAsync(async (req, res) => {
+  const result = await userService.updateAdmin(req.params.id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Admin request updated successfully',
+    data: result,
+  });
+});
+const allRequestAdmin = catchAsync(async (req, res) => {
+  const fileters = pick(req.query, ['searchTerm', 'role', 'name', 'email']);
+  const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
+  const result = await userService.allRequestAdmin(fileters, options);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Admin request fetched successfully',
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getAllUser,
@@ -76,4 +107,7 @@ export const userController = {
   updateUserById,
   deleteUserById,
   profile,
+  requestAdmin,
+  updateAdmin,
+  allRequestAdmin,
 };

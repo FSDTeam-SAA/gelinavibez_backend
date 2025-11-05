@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', tenantFreeController.getApplicationFee);
 router.put(
   '/',
-  auth(userRole.admin),
+  auth(userRole.admin,userRole.superadmin),
   tenantFreeController.updateApplicationFee,
 );
 

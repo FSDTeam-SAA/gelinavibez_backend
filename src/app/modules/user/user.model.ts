@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema<IUser>(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ['admin', 'user', 'contractor'],
+      enum: ['admin', 'user', 'contractor', 'superadmin'],
       default: 'user',
     },
     profileImage: { type: String },
@@ -23,6 +23,7 @@ const userSchema = new mongoose.Schema<IUser>(
     otpExpiry: { type: Date },
     verified: { type: Boolean, default: true },
     stripeAccountId: { type: String },
+    requestAdmin: { type: Boolean},
   },
   { timestamps: true },
 );

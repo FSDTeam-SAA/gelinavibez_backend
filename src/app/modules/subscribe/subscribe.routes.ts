@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.post(
   '/broadcast',
-  auth(userRole.admin),
+  auth(userRole.admin,userRole.superadmin),
   subscribeController.broadcastNewsletter,
 );
 router.post('/', subscribeController.createSubscrube);
