@@ -61,4 +61,10 @@ router.delete(
   userController.deleteUserById,
 );
 
+router.put(
+  '/update-access-routes/:id',
+  auth(userRole.superadmin),
+  userController.updateAccessRoutes,
+);
+
 export const userRoutes = router;

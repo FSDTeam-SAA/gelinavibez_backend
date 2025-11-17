@@ -110,6 +110,20 @@ const deleteAdmin = catchAsync(async (req, res) => {
   });
 });
 
+const updateAccessRoutes = catchAsync(async (req, res) => {
+  const { accessRoutes } = req.body;
+  const result = await userService.updateAccessRoutes(
+    req.params.id,
+    accessRoutes,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Access routes updated successfully',
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getAllUser,
@@ -121,4 +135,5 @@ export const userController = {
   updateAdmin,
   allRequestAdmin,
   deleteAdmin,
+  updateAccessRoutes,
 };

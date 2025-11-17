@@ -23,7 +23,8 @@ const userSchema = new mongoose.Schema<IUser>(
     otpExpiry: { type: Date },
     verified: { type: Boolean, default: true },
     stripeAccountId: { type: String },
-    requestAdmin: { type: Boolean},
+    requestAdmin: { type: Boolean },
+    accessRoutes: [{ type: String }],
   },
   { timestamps: true },
 );

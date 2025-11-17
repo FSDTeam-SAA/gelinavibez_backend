@@ -129,7 +129,12 @@ const allRequestAdmin = async (params: any, options: IOption) => {
   // ✅ Show users who are either "admin" OR have requested admin access
   const whereCondition =
     andCondition.length > 0
-      ? { $and: [...andCondition, { $or: [{ role: 'admin' }, { requestAdmin: true }] }] }
+      ? {
+          $and: [
+            ...andCondition,
+            { $or: [{ role: 'admin' }, { requestAdmin: true }] },
+          ],
+        }
       : { $or: [{ role: 'admin' }, { requestAdmin: true }] };
 
   // 🔹 Fetch results
@@ -185,6 +190,25 @@ const deleteAdmin = async (userId: string) => {
   return result;
 };
 
+const updateAccessRoutes = async (userId: string, accessRoutes: string[]) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
+
+  const result = await User.findByIdAndUpdate(
+    userId,
+    { accessRoutes },
+    { new: true },
+  );
+
+  if (!result) {
+    throw new AppError(400, 'Something went wrong');
+  }
+
+  return result;
+};
+
 export const userService = {
   createUser,
   getAllUser,
@@ -196,4 +220,5 @@ export const userService = {
   updateAdmin,
   allRequestAdmin,
   deleteAdmin,
+  updateAccessRoutes,
 };

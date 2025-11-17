@@ -14,4 +14,5 @@ export interface IUser {
   verified?: boolean;
   stripeAccountId?: string;
   requestAdmin?: boolean;
+  accessRoutes?: string[];
 }
