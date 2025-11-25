@@ -24,6 +24,11 @@ router.get(
   auth(userRole.contractor),
   contractorController.getMyContractorAssignExtermination,
 );
+router.get(
+  '/admin-assign-extermination',
+  auth(userRole.admin, userRole.superadmin),
+  contractorController.getAdminContractorAssignExtermination,
+);
 
 router.post(
   '/',

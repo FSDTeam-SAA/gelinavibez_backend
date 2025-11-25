@@ -25,8 +25,15 @@ router.get(
 // চার্জ ডিটেইল্স দেখবে
 router.get(
   '/:chargeId',
-  auth(userRole.admin, userRole.user, userRole.contractor,userRole.superadmin),
+  auth(userRole.admin, userRole.user, userRole.contractor, userRole.superadmin),
   chargeController.getChargeDetail,
+);
+
+// update charge
+router.put(
+  '/:id',
+  auth(userRole.admin, userRole.superadmin),
+  chargeController.updateChargeByAdmin,
 );
 
 export const chargeRoutes = router;
