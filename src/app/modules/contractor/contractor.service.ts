@@ -289,6 +289,58 @@ const getMyContractorAssignExtermination = async (
 };
 
 
+const getAdminContractorAssignExtermination = async (
+  userId: string,
+  options: IOption
+) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, "User not found");
+
+  let filter: any = {};
+
+  // Contractor → only his exterminations
+  if (user.role === "contractor") {
+    const contractor = await Contractor.findOne({ email: user.email });
+    if (!contractor)
+      throw new AppError(404, "Contractor not found for this user");
+
+    filter.contractor = contractor._id;
+  }
+
+  // Admin / Superadmin → see all exterminations
+  else if (user.role === "admin" || user.role === "superadmin") {
+    filter = {}; // no restriction
+  }
+
+  const exterminations = await Extermination.find(filter)
+    .sort({ [sortBy]: sortOrder === "desc" ? -1 : 1 })
+    .skip(skip)
+    .limit(limit)
+    .populate({
+      path: "contractor",
+      select: "companyName name email number CompanyAddress image role",
+      model: "Contractor",
+    })
+    .populate({
+      path: "charges",
+      select:
+        "amount description status dueDate apartmentName serviceType isPayment",
+    })
+    .lean();
+
+  const total = await Extermination.countDocuments(filter);
+
+  return {
+    role: user.role,
+    exterminations,
+    meta: { total, page, limit },
+  };
+};
+
+
+
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
@@ -351,6 +403,7 @@ export const contractorService = {
   updateContractor,
   deleteContractor,
   getMyContractorAssignExtermination,
+  getAdminContractorAssignExtermination,
 
   createContractorStripeAccount,
   getStripeDashboardLink,

@@ -18,6 +18,19 @@ const createCharge = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const updateChargeByAdmin = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+  const result = await chargeService.updateChargeByAdmin(userId, id, req.body);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Charge updated successfully',
+    data: result,
+  });
+});
+
 // ইউজার তার pending চার্জগুলো দেখবে
 const getMyCharges = catchAsync(async (req: Request, res: Response) => {
   const userId = req.user?.id;
@@ -119,6 +132,7 @@ const payCharge = catchAsync(async (req: Request, res: Response) => {
 
 export const chargeController = {
   createCharge,
+  updateChargeByAdmin,
   getMyCharges,
   getMyContractorCharges,
   getChargeDetail,

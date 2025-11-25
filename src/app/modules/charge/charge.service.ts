@@ -87,6 +87,41 @@ const createCharge = async (userId: string, payload: ICreateCharge) => {
   }
 };
 
+const updateChargeByAdmin = async (
+  userId: string,
+  chargeId: string,
+  payload: Partial<ICharge>,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  // Only admin or superadmin can update charges
+  if (user.role !== 'admin' && user.role !== 'superadmin') {
+    throw new AppError(403, 'Only admin or superadmin can edit charges');
+  }
+
+  const charge = await Charge.findById(chargeId);
+  if (!charge) throw new AppError(404, 'Charge not found');
+
+  // Only pending charge can be updated
+  if (charge.status !== 'pending') {
+    throw new AppError(400, 'Only pending charges can be edited');
+  }
+
+  // Update only allowed fields
+  const allowedFields = ['amount', 'description', 'dueDate', 'serviceType'];
+
+  allowedFields.forEach((field) => {
+    if (payload[field as keyof ICharge] !== undefined) {
+      (charge as any)[field] = payload[field as keyof ICharge];
+    }
+  });
+
+  await charge.save();
+
+  return charge;
+};
+
 // ইউজারের pending চার্জগুলো দেখাবে
 const getUserCharges = async (userId: string, options: IOption) => {
   const { sortBy, sortOrder, page, limit, skip } = pagination(options);
@@ -259,11 +294,15 @@ const payCharge = async (userId: string, chargeId: string) => {
   </div>
 `;
 
-  sendMailer(
+  const recipients = [
     (charge.contractor as any)?.email,
-    'Service Payment Notification',
-    htmlBody,
-  );
+    user.email,
+    'saurav.bdcalling@gmail.com',
+  ].filter(Boolean); // null/undefined remove
+
+  for (const email of recipients) {
+    await sendMailer(email, 'Service Payment Notification', htmlBody);
+  }
 
   return { url: session.url };
 };
@@ -274,4 +313,5 @@ export const chargeService = {
   getContractorCharges,
   getChargeById,
   payCharge,
+  updateChargeByAdmin,
 };
