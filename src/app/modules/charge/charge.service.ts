@@ -274,35 +274,35 @@ const payCharge = async (userId: string, chargeId: string) => {
     chargeId: charge._id,
   });
 
-  const htmlBody = `
-  <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f6f6f6;">
-    <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px;">
-      <h2 style="color: #007bff;">Service Payment Notification</h2>
-      <p>Dear ${contractor.firstName || 'Contractor'},</p>
-      <p>A new payment request has been initiated for your service:</p>
-      <ul style="line-height: 1.6;">
-        <li><strong>Apartment:</strong> ${charge.apartmentName}</li>
-        <li><strong>Service Type:</strong> ${charge.serviceType}</li>
-        <li><strong>Amount:</strong> $${charge.amount}</li>
-        <li><strong>Admin Share:</strong> $${adminShareDollars}</li>
-        <li><strong>Contractor Share:</strong> $${contractorShareDollars}</li>
-      </ul>
-      <p>Once the tenant completes the payment, you will receive another confirmation email.</p>
-      <br/>
-      <p style="color: #666;">— Bridge Point Solution</p>
-    </div>
-  </div>
-`;
+//   const htmlBody = `
+//   <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f6f6f6;">
+//     <div style="max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px;">
+//       <h2 style="color: #007bff;">Service Payment Notification</h2>
+//       <p>Dear ${contractor.firstName || 'Contractor'},</p>
+//       <p>A new payment request has been initiated for your service:</p>
+//       <ul style="line-height: 1.6;">
+//         <li><strong>Apartment:</strong> ${charge.apartmentName}</li>
+//         <li><strong>Service Type:</strong> ${charge.serviceType}</li>
+//         <li><strong>Amount:</strong> $${charge.amount}</li>
+//         <li><strong>Admin Share:</strong> $${adminShareDollars}</li>
+//         <li><strong>Contractor Share:</strong> $${contractorShareDollars}</li>
+//       </ul>
+//       <p>Once the tenant completes the payment, you will receive another confirmation email.</p>
+//       <br/>
+//       <p style="color: #666;">— Bridge Point Solution</p>
+//     </div>
+//   </div>
+// `;
 
-  const recipients = [
-    (charge.contractor as any)?.email,
-    user.email,
-    'saurav.bdcalling@gmail.com',
-  ].filter(Boolean); // null/undefined remove
+//   const recipients = [
+//     (charge.contractor as any)?.email,
+//     user.email,
+//     'saurav.bdcalling@gmail.com',
+//   ].filter(Boolean); // null/undefined remove
 
-  for (const email of recipients) {
-    await sendMailer(email, 'Service Payment Notification', htmlBody);
-  }
+//   for (const email of recipients) {
+//     await sendMailer(email, 'Service Payment Notification', htmlBody);
+//   }
 
   return { url: session.url };
 };
