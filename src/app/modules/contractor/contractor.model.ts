@@ -51,5 +51,15 @@ const constractorSchema = new mongoose.Schema<IContractor>(
   { timestamps: true },
 );
 
+constractorSchema.virtual('user', {
+  ref: 'User',
+  localField: 'email',
+  foreignField: 'email',
+  justOne: true,
+});
+
+constractorSchema.set('toObject', { virtuals: true });
+constractorSchema.set('toJSON', { virtuals: true });
+
 const Contractor = mongoose.model<IContractor>('Contractor', constractorSchema);
 export default Contractor;
