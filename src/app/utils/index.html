@@ -1,0 +1,80 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket.IO Test</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  </head>
+  <body>
+    <h1>Socket.IO Test</h1>
+    <div>
+      <input id="userId" placeholder="Your User ID" />
+      <button onclick="connectSocket()">Connect</button>
+    </div>
+    <br />
+    <div>
+      <input id="receiverId" placeholder="Receiver ID" />
+      <input id="conversationId" placeholder="Conversation ID" />
+      <input id="message" placeholder="Message" />
+      <button onclick="sendMessage()">Send Message</button>
+    </div>
+    <br />
+    <div
+      id="log"
+      style="
+        border: 1px solid #ccc;
+        padding: 10px;
+        height: 300px;
+        overflow: auto;
+      "
+    ></div>
+
+    <script>
+      let socket;
+
+      function log(msg) {
+        document.getElementById('log').innerHTML += msg + '<br>';
+      }
+
+      function connectSocket() {
+        const userId = document.getElementById('userId').value;
+
+        socket = io('http://localhost:5000');
+
+        socket.on('connect', () => {
+          log('✅ Connected: ' + socket.id);
+          socket.emit('addUser', userId);
+        });
+
+        socket.on('getUsers', (users) => {
+          log('👥 Online users: ' + JSON.stringify(users));
+        });
+
+        socket.on('receiveMessage', (msg) => {
+          log('📩 Received: ' + JSON.stringify(msg));
+        });
+
+        socket.on('messageSent', (msg) => {
+          log('✅ Sent: ' + JSON.stringify(msg));
+        });
+
+        socket.on('messageError', (err) => {
+          log('❌ Error: ' + JSON.stringify(err));
+        });
+      }
+
+      function sendMessage() {
+        const userId = document.getElementById('userId').value;
+        const receiverId = document.getElementById('receiverId').value;
+        const conversationId = document.getElementById('conversationId').value;
+        const message = document.getElementById('message').value;
+
+        socket.emit('sendMessage', {
+          senderId: userId,
+          receiverId: receiverId,
+          conversationId: conversationId,
+          message: message,
+        });
+      }
+    </script>
+  </body>
+</html>

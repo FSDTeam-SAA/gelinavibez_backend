@@ -1,8 +1,23 @@
 import mongoose from 'mongoose';
 import app from './app';
 import config from './app/config';
+import { socketHandler } from './app/helper/socketHandler';
+import http from 'http';
+import { Server } from 'socket.io';
+
 
 const PORT = config.port;
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: '*',
+    credentials: true,
+  },
+  transports: ['websocket', 'polling'],
+});
+
+socketHandler(io);
 
 const main = async () => {
   try {
@@ -13,7 +28,7 @@ const main = async () => {
     const mongo = await mongoose.connect(config.mongoUri);
     console.log(`✅ MongoDB connected: ${mongo.connection.host}`);
 
-    app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
   } catch (error: any) {
