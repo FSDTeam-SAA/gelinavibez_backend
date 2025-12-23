@@ -51,7 +51,7 @@ const createConversation = async (userId: string, receiverId: string) => {
 };
 
 // ADMIN / SUPERADMIN CAN SEE ALL
-const getAllConversations = async (userId: string, role: string) => {
+const getAllConversations = async (userId: string) => {
   const user = await User.findById(userId);
 
   if (!user) throw new AppError(404, 'User not found');

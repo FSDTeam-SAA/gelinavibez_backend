@@ -10,7 +10,8 @@
     "start": "npm run start:prod",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prettier": "prettier --write \"src/**/*.{js,ts,json}\""
+    "prettier": "prettier --write \"src/**/*.{js,ts,json}\"",
+    "build-and-start": "npm run build && npm run start:prod"
   },
   "keywords": [],
   "author": "",
