@@ -62,72 +62,35 @@ import Contractor from './contractor.model';
 // };
 
 const createContractor = async (
+  userId: string,
   payload: IContractor,
-  file?: Express.Multer.File,
+  files?: Express.Multer.File[],
+  videos?: Express.Multer.File[],
 ) => {
-  const existingUser = await User.findOne({ email: payload.email });
+  const existingUser = await User.findById(userId);
+  if (!existingUser) throw new AppError(404, 'User not found');
 
-  if (file) {
-    const uploaded = await fileUploader.uploadToCloudinary(file);
-    payload.image = uploaded.secure_url;
+  if (files?.length) {
+    const uploadedImages = await Promise.all(
+      files.map((file) => fileUploader.uploadToCloudinary(file)),
+    );
+    payload.images = uploadedImages.map((file) => file.secure_url);
   }
 
-  const contractor = await Contractor.findOneAndUpdate(
-    { email: payload.email },
-    { $set: payload },
-    { new: true, upsert: true },
-  );
-
-  if (!contractor) throw new AppError(400, 'Contractor not created');
-
-  let generatedPassword: string | null = null;
-
-  if (!existingUser) {
-    generatedPassword = `${contractor.name
-      .split(' ')[0]
-      .toLowerCase()}${Math.floor(Math.random() * 10000 + 1)}`;
-
-    const newUser = new User({
-      firstName: contractor.name,
-      lastName: '',
-      email: contractor.email,
-      phone: contractor.number,
-      role: 'contractor',
-      password: generatedPassword,
-      profileImage: contractor.image,
-    });
-    await newUser.save();
-  } else {
-    existingUser.firstName = contractor.name;
-    existingUser.phone = contractor.number;
-    existingUser.role = 'contractor';
-    existingUser.profileImage = contractor.image;
-    await existingUser.save();
+  if (videos?.length) {
+    const uploadedVideos = await Promise.all(
+      videos.map((file) => fileUploader.uploadToCloudinary(file)),
+    );
+    payload.videos = uploadedVideos.map((file) => file.secure_url);
   }
 
-  let messageHtml = `
-    <h2>Welcome, ${contractor.name}</h2>
-    <p>Your contractor account is ${
-      existingUser ? 'updated' : 'created'
-    } successfully.</p>
-    <p><strong>Login Email:</strong> ${contractor.email}</p>
-  `;
+  const result = await Contractor.create({
+    ...payload,
+    user: existingUser._id,
+  });
 
-  if (generatedPassword) {
-    messageHtml += `<p><strong>Password:</strong> ${generatedPassword}</p>`;
-  }
-
-  messageHtml += `<p>You can now log in using your credentials.</p>`;
-
-  await sendMailer(
-    contractor.email,
-    'Contractor Account Created/Updated',
-    messageHtml,
-  );
-
-  return contractor;
+  return result;
 };
-
 
 const getAllContractor = async (params: any, options: IOption) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
@@ -189,15 +152,25 @@ const getSingleContractor = async (id: string) => {
 const updateContractor = async (
   id: string,
   payload: Partial<IContractor>,
-  file?: Express.Multer.File,
+  files?: Express.Multer.File[],
+  videos?: Express.Multer.File[],
 ) => {
-  if (file) {
-    const contractorimage = await fileUploader.uploadToCloudinary(file);
-    payload.image = contractorimage.secure_url;
+  if (files?.length) {
+    const uploaded = await Promise.all(
+      files.map((file) => fileUploader.uploadToCloudinary(file)),
+    );
+    payload.images = uploaded.map((file) => file.secure_url);
+  }
+
+  if (videos?.length) {
+    const uploaded = await Promise.all(
+      videos.map((file) => fileUploader.uploadToCloudinary(file)),
+    );
+    payload.videos = uploaded.map((file) => file.secure_url);
   }
   const result = await Contractor.findByIdAndUpdate(id, payload, {
     new: true,
-  }).populate('service');
+  });
   if (!result) throw new AppError(400, 'Failed to update contact');
   return result;
 };
@@ -255,7 +228,7 @@ const deleteContractor = async (id: string) => {
 
 const getMyContractorAssignExtermination = async (
   userId: string,
-  options: IOption
+  options: IOption,
 ) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
 
@@ -266,20 +239,23 @@ const getMyContractorAssignExtermination = async (
   if (!contractor)
     throw new AppError(404, 'Contractor not found for this user');
 
-
-  const exterminations = await Extermination.find({ contractor: contractor._id })
+  const exterminations = await Extermination.find({
+    contractor: contractor._id,
+  })
     .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
     .skip(skip)
     .limit(limit)
     .populate({
       path: 'charges', // link to the charges collection
-      select: 'amount description status dueDate apartmentName serviceType isPayment',
+      select:
+        'amount description status dueDate apartmentName serviceType isPayment',
       model: 'Charge', // explicitly tell mongoose which model to use
     })
     .lean(); // lean() returns plain JS objects instead of Mongoose documents
 
-
-  const total = await Extermination.countDocuments({ contractor: contractor._id });
+  const total = await Extermination.countDocuments({
+    contractor: contractor._id,
+  });
 
   return {
     contractor,
@@ -288,45 +264,44 @@ const getMyContractorAssignExtermination = async (
   };
 };
 
-
 const getAdminContractorAssignExtermination = async (
   userId: string,
-  options: IOption
+  options: IOption,
 ) => {
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
 
   const user = await User.findById(userId);
-  if (!user) throw new AppError(404, "User not found");
+  if (!user) throw new AppError(404, 'User not found');
 
   let filter: any = {};
 
   // Contractor → only his exterminations
-  if (user.role === "contractor") {
+  if (user.role === 'contractor') {
     const contractor = await Contractor.findOne({ email: user.email });
     if (!contractor)
-      throw new AppError(404, "Contractor not found for this user");
+      throw new AppError(404, 'Contractor not found for this user');
 
     filter.contractor = contractor._id;
   }
 
   // Admin / Superadmin → see all exterminations
-  else if (user.role === "admin" || user.role === "superadmin") {
+  else if (user.role === 'admin' || user.role === 'superadmin') {
     filter = {}; // no restriction
   }
 
   const exterminations = await Extermination.find(filter)
-    .sort({ [sortBy]: sortOrder === "desc" ? -1 : 1 })
+    .sort({ [sortBy]: sortOrder === 'desc' ? -1 : 1 })
     .skip(skip)
     .limit(limit)
     .populate({
-      path: "contractor",
-      select: "companyName name email number CompanyAddress image role",
-      model: "Contractor",
+      path: 'contractor',
+      select: 'companyName name email number CompanyAddress image role',
+      model: 'Contractor',
     })
     .populate({
-      path: "charges",
+      path: 'charges',
       select:
-        "amount description status dueDate apartmentName serviceType isPayment",
+        'amount description status dueDate apartmentName serviceType isPayment',
     })
     .lean();
 
@@ -338,9 +313,6 @@ const getAdminContractorAssignExtermination = async (
     meta: { total, page, limit },
   };
 };
-
-
-
 
 const stripe = new Stripe(config.stripe.secretKey!);
 

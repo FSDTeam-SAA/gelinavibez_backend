@@ -11,6 +11,9 @@ export interface IContractor {
   worlHour: number;
   superContact: string;
   superName: string;
-  image: string;
-  service: Types.ObjectId;
+  images: string[];
+  videos: string[];
+  serviceCategory: string[];
+  user?: Types.ObjectId;
+  assasingContractor?: Types.ObjectId;
 }

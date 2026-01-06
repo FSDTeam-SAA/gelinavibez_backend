@@ -12,11 +12,10 @@ cloudinary.config({
   api_secret: config.cloudinary.apiSecret,
 });
 
-// Sanitize filename function
 const sanitizeFileName = (originalName: string) => {
   return originalName
-    .replace(/\s+/g, '_') // space → underscore
-    .replace(/[^a-zA-Z0-9._-]/g, '') // remove special chars
+    .replace(/\s+/g, '_')
+    .replace(/[^a-zA-Z0-9._-]/g, '')
     .toLowerCase();
 };
 
@@ -30,7 +29,6 @@ const storage = multer.diskStorage({
   },
 });
 
-// Multer instance (image + video support)
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
@@ -42,9 +40,6 @@ const upload = multer({
       cb(new AppError(400, 'Only images and videos are allowed'));
     }
   },
-  // limits: {
-  //   fileSize: 50 * 1024 * 1024, // 50MB max
-  // },
 });
 
 const uploadToCloudinary = async (
@@ -52,8 +47,6 @@ const uploadToCloudinary = async (
 ): Promise<ICloudinaryResponse> => {
   return new Promise<ICloudinaryResponse>((resolve, reject) => {
     const safeName = sanitizeFileName(file.originalname);
-
-    // Detect resource type
     const ext = path.extname(file.originalname).toLowerCase();
     const isVideo = /mp4|mov|avi|mkv/.test(ext);
 
@@ -64,11 +57,11 @@ const uploadToCloudinary = async (
         folder: 'File_Uploader',
         resource_type: isVideo ? 'video' : 'image',
         ...(isVideo
-          ? {} // no transformation for video by default
+          ? {}
           : { transformation: { width: 500, height: 500, crop: 'limit' } }),
       },
       (error, result) => {
-        fs.unlinkSync(file.path); // remove temp file
+        fs.unlinkSync(file.path);
         if (error) {
           reject(error);
         } else if (result) {

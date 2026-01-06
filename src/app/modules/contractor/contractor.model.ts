@@ -6,7 +6,6 @@ const constractorSchema = new mongoose.Schema<IContractor>(
     companyName: {
       type: String,
       required: true,
-      unique: true,
     },
     CompanyAddress: {
       type: String,
@@ -40,26 +39,42 @@ const constractorSchema = new mongoose.Schema<IContractor>(
     superName: {
       type: String,
     },
-    image: {
-      type: String,
-    },
-    service: {
+    images: [
+      {
+        type: String,
+      },
+    ],
+    videos: [
+      {
+        type: String,
+      },
+    ],
+    serviceCategory: [
+      {
+        type: String,
+      },
+    ],
+    user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Service',
+      ref: 'User',
+    },
+    assasingContractor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
     },
   },
   { timestamps: true },
 );
 
-constractorSchema.virtual('user', {
-  ref: 'User',
-  localField: 'email',
-  foreignField: 'email',
-  justOne: true,
-});
+// constractorSchema.virtual('user', {
+//   ref: 'User',
+//   localField: 'email',
+//   foreignField: 'email',
+//   justOne: true,
+// });
 
-constractorSchema.set('toObject', { virtuals: true });
-constractorSchema.set('toJSON', { virtuals: true });
+// constractorSchema.set('toObject', { virtuals: true });
+// constractorSchema.set('toJSON', { virtuals: true });
 
 const Contractor = mongoose.model<IContractor>('Contractor', constractorSchema);
 export default Contractor;

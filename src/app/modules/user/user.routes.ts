@@ -1,7 +1,5 @@
 import express from 'express';
 import { userController } from './user.controller';
-import validationRequest from '../../middlewares/validationRequest';
-import { userValidation } from './user.validation';
 import auth from '../../middlewares/auth';
 import { fileUploader } from '../../helper/fileUploder';
 import { userRole } from './user.constant';
@@ -10,18 +8,34 @@ const router = express.Router();
 
 router.post(
   '/create-user',
-  validationRequest(userValidation.userSchema),
+  auth(userRole.superadmin, userRole.admin),
   userController.createUser,
 );
 
 router.get(
   '/profile',
-  auth(userRole.admin, userRole.contractor, userRole.user, userRole.superadmin),
+  auth(
+    userRole.admin,
+    userRole.contractor,
+    userRole.user,
+    userRole.superadmin,
+    userRole.exterminator,
+    userRole.landlord,
+    userRole.broker,
+  ),
   userController.profile,
 );
 router.put(
   '/profile',
-  auth(userRole.admin, userRole.contractor, userRole.user, userRole.superadmin),
+  auth(
+    userRole.admin,
+    userRole.contractor,
+    userRole.user,
+    userRole.superadmin,
+    userRole.exterminator,
+    userRole.landlord,
+    userRole.broker,
+  ),
   fileUploader.upload.single('profileImage'),
   userController.updateUserById,
 );
@@ -65,6 +79,13 @@ router.put(
   '/update-access-routes/:id',
   auth(userRole.superadmin),
   userController.updateAccessRoutes,
+);
+
+router.put(
+  '/:id',
+  auth(userRole.superadmin, userRole.admin),
+  fileUploader.upload.single('profileImage'),
+  userController.updateUserById,
 );
 
 export const userRoutes = router;

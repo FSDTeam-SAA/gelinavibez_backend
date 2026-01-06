@@ -1,0 +1,10 @@
+import { Types } from 'mongoose';
+
+export interface IAdminTracker {
+  adminId: Types.ObjectId;
+  action: 'create' | 'update' | 'delete';
+  model: string;
+  targetId: Types.ObjectId;
+  description?: string;
+  ipAddress: string;
+}
