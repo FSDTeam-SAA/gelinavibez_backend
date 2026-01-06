@@ -3,4 +3,7 @@ export const userRole = {
   user: 'user',
   contractor: 'contractor',
   superadmin: 'superadmin',
+  exterminator: 'exterminator',
+  landlord: 'landlord',
+  broker: 'broker',
 } as const;

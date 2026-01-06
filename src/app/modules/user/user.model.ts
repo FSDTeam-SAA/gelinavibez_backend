@@ -11,7 +11,15 @@ const userSchema = new mongoose.Schema<IUser>(
     password: { type: String, required: true },
     role: {
       type: String,
-      enum: ['admin', 'user', 'contractor', 'superadmin'],
+      enum: [
+        'admin',
+        'user',
+        'contractor',
+        'superadmin',
+        'exterminator',
+        'landlord',
+        'broker',
+      ],
       default: 'user',
     },
     profileImage: { type: String },

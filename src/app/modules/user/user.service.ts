@@ -1,12 +1,40 @@
 import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
+import sendMailer from '../../helper/sendMailer';
+import AdminTracker from '../admintracker/admintracker.model';
 
 import { IUser } from './user.interface';
 import User from './user.model';
 
-const createUser = async (payload: IUser) => {
+const createUser = async (
+  userId: string,
+  payload: IUser,
+  ipAddress: string,
+) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
+
+  const generatPassword = Math.random().toString(36).slice(-8);
+  payload.password = generatPassword;
   const result = await User.create(payload);
+
+  await AdminTracker.create({
+    adminId: user._id,
+    action: 'create',
+    model: 'User',
+    targetId: result._id,
+    description: 'User created',
+    ipAddress: ipAddress || 'unknown',
+  });
+
+  await sendMailer(
+    payload.email,
+    'User Created',
+    `User created successfully email: ${payload.email} password: ${generatPassword}`,
+  );
 
   return result;
 };
@@ -16,7 +44,14 @@ const getAllUser = async (params: any, options: IOption) => {
   const { searchTerm, ...filterData } = params;
 
   const andCondition: any[] = [];
-  const userSearchableFields = ['name', 'email', 'role'];
+  const userSearchableFields = [
+    'name',
+    'email',
+    'role',
+    'firstName',
+    'lastName',
+    'verified',
+  ];
 
   if (searchTerm) {
     andCondition.push({
@@ -59,10 +94,15 @@ const getUserById = async (id: string) => {
 };
 
 const updateUserById = async (
+  userId: string,
   id: string,
   payload: IUser,
   file?: Express.Multer.File,
 ) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
   if (file) {
     const uploadProfile = await fileUploader.uploadToCloudinary(file);
     if (!uploadProfile?.secure_url) {
@@ -71,11 +111,31 @@ const updateUserById = async (
     payload.profileImage = uploadProfile.secure_url;
   }
   const result = await User.findByIdAndUpdate(id, payload, { new: true });
+
+  await AdminTracker.create({
+    adminId: user._id,
+    action: 'update',
+    model: 'User',
+    targetId: result?._id,
+    description: 'User updated',
+  });
   return result;
 };
 
-const deleteUserById = async (id: string) => {
+const deleteUserById = async (userId:string,id: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
   const result = await User.findByIdAndDelete(id);
+
+  await AdminTracker.create({
+    adminId: user._id,
+    action: 'delete',
+    model: 'User',
+    targetId: result?._id,
+    description: 'User deleted',
+  });
   return result;
 };
 
@@ -108,7 +168,7 @@ const allRequestAdmin = async (params: any, options: IOption) => {
   const andCondition: any[] = [];
   const userSearchableFields = ['firstName', 'lastName', 'email', 'role'];
 
-  // 🔍 Search condition
+  //  Search condition
   if (searchTerm) {
     andCondition.push({
       $or: userSearchableFields.map((field) => ({
@@ -117,7 +177,7 @@ const allRequestAdmin = async (params: any, options: IOption) => {
     });
   }
 
-  // 🎯 Filters (role, verified, etc.)
+  //  Filters (role, verified, etc.)
   if (Object.keys(filterData).length) {
     andCondition.push({
       $and: Object.entries(filterData).map(([field, value]) => ({
@@ -126,7 +186,7 @@ const allRequestAdmin = async (params: any, options: IOption) => {
     });
   }
 
-  // ✅ Show users who are either "admin" OR have requested admin access
+  // Show users who are either "admin" OR have requested admin access
   const whereCondition =
     andCondition.length > 0
       ? {
@@ -137,13 +197,13 @@ const allRequestAdmin = async (params: any, options: IOption) => {
         }
       : { $or: [{ role: 'admin' }, { requestAdmin: true }] };
 
-  // 🔹 Fetch results
+  // Fetch results
   const result = await User.find(whereCondition)
     .skip(skip)
     .limit(limit)
     .sort({ [sortBy]: sortOrder } as any);
 
-  // 🔹 Total count
+  // Total count
   const total = await User.countDocuments(whereCondition);
 
   return {

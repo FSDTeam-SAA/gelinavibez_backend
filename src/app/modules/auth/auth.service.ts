@@ -9,6 +9,7 @@ import { jwtHelpers } from '../../helper/jwtHelpers';
 import sendMailer from '../../helper/sendMailer';
 import bcrypt from 'bcryptjs';
 import createOtpTemplate from '../../utils/createOtpTemplate';
+import { userRole } from '../user/user.constant';
 
 const registerUser = async (payload: Partial<IUser>) => {
   const exist = await User.findOne({ email: payload.email });
@@ -17,8 +18,11 @@ const registerUser = async (payload: Partial<IUser>) => {
   const idx = Math.floor(Math.random() * 100);
   payload.profileImage = `https://avatar.iran.liara.run/public/${idx}.png`;
 
-  const user = await User.create(payload);
+  if(payload.role === userRole.admin || payload.role === userRole.broker || payload.role === userRole.landlord){
+    payload.verified = false;
+  }
 
+  const user = await User.create(payload);
   return user;
 };
 

@@ -32,7 +32,11 @@ router.get(
 
 router.post(
   '/',
-  fileUploader.upload.single('image'),
+  auth(userRole.user),
+  fileUploader.upload.fields([
+    { name: 'images', maxCount: 10 },
+    { name: 'videos', maxCount: 5 },
+  ]),
   contractorController.createContractor,
 );
 

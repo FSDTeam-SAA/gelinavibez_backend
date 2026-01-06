@@ -4,13 +4,29 @@ import sendResponse from '../../utils/sendResponse';
 import { contractorService } from './contractor.service';
 
 const createContractor = catchAsync(async (req, res) => {
-  const file = req.file as Express.Multer.File;
-  const fromdata = req.body.data ? JSON.parse(req.body.data) : req.body;
-  const result = await contractorService.createContractor(fromdata, file);
+  const userId = req.user?.id;
+
+  const files = req.files as {
+    images?: Express.Multer.File[];
+    videos?: Express.Multer.File[];
+  };
+
+  const images = files?.images || [];
+  const videos = files?.videos || [];
+
+  const formData = req.body.data ? JSON.parse(req.body.data) : req.body;
+
+  const result = await contractorService.createContractor(
+    userId,
+    formData,
+    images,
+    videos,
+  );
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Contractor created successfully',
+    message: 'Contractor service created successfully',
     data: result,
   });
 });
@@ -51,13 +67,19 @@ const getSingleContractor = catchAsync(async (req, res) => {
 
 const updateContractor = catchAsync(async (req, res) => {
   const { id } = req.params;
-  const file = req.file as Express.Multer.File;
+  const files = req.files as Express.Multer.File[];
+  const videos = req.files as Express.Multer.File[];
   const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
-  const result = await contractorService.updateContractor(id, fromData, file);
+  const result = await contractorService.updateContractor(
+    id,
+    fromData,
+    files,
+    videos,
+  );
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'Contractor updated successfully',
+    message: 'Contractor service updated successfully',
     data: result,
   });
 });
