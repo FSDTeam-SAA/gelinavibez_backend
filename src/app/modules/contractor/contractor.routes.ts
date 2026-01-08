@@ -32,6 +32,18 @@ router.put(
   contractorController.chargesContractor,
 );
 
+router.put(
+  '/status/:id',
+  auth(userRole.admin, userRole.superadmin),
+  contractorController.updateStatusAdmin,
+);
+
+router.get(
+  '/my-contractor-service',
+  auth(userRole.user),
+  contractorController.getMyContractorService,
+);
+
 // === X ===
 
 router.get(

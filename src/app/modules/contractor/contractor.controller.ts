@@ -175,6 +175,37 @@ const getMyAssignContractor = catchAsync(async (req, res) => {
   });
 });
 
+const getMyContractorService = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const filters = pick(req.query, [
+    'searchTerm',
+    'companyName',
+    'CompanyAddress',
+    'name',
+    'number',
+    'email',
+    'serviceAreas',
+    'scopeWork',
+    'superContact',
+    'superName',
+    'status',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await contractorService.getMyContractorService(
+    userId,
+    filters,
+    options,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Contractor fetched successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 const chargesContractor = catchAsync(async (req, res) => {
   const userId = req.user?.id;
   const { id } = req.params;
@@ -185,6 +216,19 @@ const chargesContractor = catchAsync(async (req, res) => {
     statusCode: 200,
     success: true,
     message: 'Contractor updated charges successfully',
+    data: result,
+  });
+});
+
+const updateStatusAdmin = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+  const { status } = req.body;
+  const result = await contractorService.updateStatusAdmin(userId, id, status);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Contractor status updated successfully',
     data: result,
   });
 });
@@ -225,6 +269,8 @@ export const contractorController = {
   addAdminContractorAssign,
   getMyAssignContractor,
   chargesContractor,
+  updateStatusAdmin,
+  getMyContractorService,
 
   createStripeAccount,
   getStripeDashboardLink,

@@ -7,6 +7,9 @@ const exterminationSchema = new Schema<IExtermination>(
     email: { type: String, required: true },
     phoneNumber: { type: String, required: true },
     propertyAddress: { type: String, required: true },
+    //update propertyAddress
+    assigningExtermination: { type: Schema.Types.ObjectId, ref: 'User' },
+    charges: { type: Number },
 
     typeOfProperty: { type: [String], required: true },
     preferredContactMethod: { type: [String], required: true },
@@ -34,7 +37,7 @@ const exterminationSchema = new Schema<IExtermination>(
     signature: { type: String, required: true },
     date: { type: String, required: true },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    contractor: { type: Schema.Types.ObjectId, ref: 'Contractor' },
+    // contractor: { type: Schema.Types.ObjectId, ref: 'Contractor' },
     // new fields
     status: {
       type: String,
@@ -47,11 +50,11 @@ const exterminationSchema = new Schema<IExtermination>(
   },
 );
 
-exterminationSchema.virtual('charges', {
-  ref: 'Charge', // Model to use
-  localField: '_id', // Extermination _id
-  foreignField: 'extermination', // Charge.extermination references this
-});
+// exterminationSchema.virtual('charges', {
+//   ref: 'Charge', // Model to use
+//   localField: '_id', // Extermination _id
+//   foreignField: 'extermination', // Charge.extermination references this
+// });
 
 const Extermination = mongoose.model<IExtermination>(
   'Extermination',
