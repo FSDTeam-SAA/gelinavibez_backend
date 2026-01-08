@@ -66,6 +66,11 @@ const constractorSchema = new mongoose.Schema<IContractor>(
     charges: {
       type: Number,
     },
+    status: {
+      type: String,
+      enum: ['pending', 'assigned', 'completed', 'paid'],
+      default: 'pending',
+    },
   },
   { timestamps: true },
 );

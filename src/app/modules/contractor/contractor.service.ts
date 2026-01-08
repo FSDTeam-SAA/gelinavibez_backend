@@ -448,6 +448,96 @@ const chargesContractor = async (
   return contractor;
 };
 
+const getMyContractorService = async (
+  userId: string,
+  params: any,
+  options: IOption,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const andCondition: any[] = [];
+  const userSearchableFields = [
+    'companyName',
+    'CompanyAddress',
+    'name',
+    'number',
+    'email',
+    'serviceAreas',
+    'scopeWork',
+    'superContact',
+    'superName',
+    'status',
+  ];
+
+  if (searchTerm) {
+    andCondition.push({
+      $or: userSearchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  andCondition.push({ user: user._id });
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  const result = await Contractor.find(whereCondition)
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  const total = await Contractor.countDocuments(whereCondition);
+
+  return {
+    data: result,
+    meta: {
+      total,
+      page,
+      limit,
+    },
+  };
+};
+
+const updateStatusAdmin = async (
+  userId: string,
+  constractorId: string,
+  status: string,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+  if (user.role !== userRole.admin && user.role !== userRole.superadmin)
+    throw new AppError(403, 'Only admin or superadmin can update status');
+
+  const contractor = await Contractor.findById(constractorId);
+  if (!contractor) throw new AppError(404, 'Contractor not found');
+  const result = await Contractor.findByIdAndUpdate(
+    constractorId,
+    { status },
+    { new: true },
+  );
+
+  await AdminTracker.create({
+    adminId: user._id,
+    action: 'update',
+    model: 'Contractor',
+    targetId: constractorId,
+    description: 'Contractor status updated',
+  });
+  return result;
+};
+
 const stripe = new Stripe(config.stripe.secretKey!);
 
 /**
@@ -513,6 +603,8 @@ export const contractorService = {
   addAdminContractorAssign,
   getMyAssignContractor,
   chargesContractor,
+  updateStatusAdmin,
+  getMyContractorService,
 
   createContractorStripeAccount,
   getStripeDashboardLink,

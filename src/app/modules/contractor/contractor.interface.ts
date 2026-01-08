@@ -17,4 +17,5 @@ export interface IContractor {
   user?: Types.ObjectId;
   assigningContractor?: Types.ObjectId;
   charges?: number;
+  status?: 'pending' | 'assigned' | 'completed' | 'paid';
 }

@@ -23,5 +23,7 @@ export interface IExtermination {
   date: string;
   user: Types.ObjectId;
   contractor?: Types.ObjectId;
-  status?: 'pending'| 'assigned'| 'completed'| 'paid';
+  status?: 'pending' | 'assigned' | 'completed' | 'paid';
+  assigningExtermination?: Types.ObjectId;
+  charges?: number;
 }
