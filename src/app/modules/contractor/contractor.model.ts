@@ -62,6 +62,10 @@ const constractorSchema = new mongoose.Schema<IContractor>(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+
+    charges: {
+      type: Number,
+    },
   },
   { timestamps: true },
 );

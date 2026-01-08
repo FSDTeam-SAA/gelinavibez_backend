@@ -19,6 +19,21 @@ router.get(
   contractorController.getStripeDashboardLink,
 );
 
+// ==update ===
+router.get(
+  '/my-assign-contractor',
+  auth(userRole.contractor),
+  contractorController.getMyAssignContractor,
+);
+
+router.put(
+  '/charges/:id',
+  auth(userRole.contractor, userRole.admin, userRole.superadmin),
+  contractorController.chargesContractor,
+);
+
+// === X ===
+
 router.get(
   '/my-assign-extermination',
   auth(userRole.contractor),
@@ -40,21 +55,15 @@ router.post(
   contractorController.createContractor,
 );
 
-
-
 router.get('/', contractorController.getAllContractor);
 router.get('/:id', contractorController.getSingleContractor);
 router.put('/:id', contractorController.updateContractor);
 router.delete('/:id', contractorController.deleteContractor);
-
-
 
 router.put(
   '/:id/assign-contractor/:assigningContractor',
   auth(userRole.admin, userRole.superadmin),
   contractorController.addAdminContractorAssign,
 );
-
-
 
 export const contractorRouter = router;

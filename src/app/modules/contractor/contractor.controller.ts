@@ -145,6 +145,49 @@ const addAdminContractorAssign = catchAsync(async (req, res) => {
   });
 });
 
+const getMyAssignContractor = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const filters = pick(req.query, [
+    'searchTerm',
+    'companyName',
+    'CompanyAddress',
+    'name',
+    'number',
+    'email',
+    'serviceAreas',
+    'scopeWork',
+    'superContact',
+    'superName',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await contractorService.getMyAssignContractor(
+    userId,
+    filters,
+    options,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Contractor fetched successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+const chargesContractor = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+  const { charges } = req.body;
+  const result = await contractorService.chargesContractor(userId, id, charges);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Contractor updated charges successfully',
+    data: result,
+  });
+});
 
 const createStripeAccount = catchAsync(async (req, res) => {
   const userId = req.user?.id;
@@ -180,6 +223,8 @@ export const contractorController = {
   getMyContractorAssignExtermination,
   getAdminContractorAssignExtermination,
   addAdminContractorAssign,
+  getMyAssignContractor,
+  chargesContractor,
 
   createStripeAccount,
   getStripeDashboardLink,
