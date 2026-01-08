@@ -129,6 +129,23 @@ const getAdminContractorAssignExtermination = catchAsync(async (req, res) => {
   });
 });
 
+const addAdminContractorAssign = catchAsync(async (req, res) => {
+  const adminId = req.user!.id;
+  const result = await contractorService.addAdminContractorAssign(
+    adminId,
+    req.params.id,
+    req.params.assigningContractor,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Contractor assigned successfully',
+    data: result,
+  });
+});
+
+
 const createStripeAccount = catchAsync(async (req, res) => {
   const userId = req.user?.id;
   const result = await contractorService.createContractorStripeAccount(userId);
@@ -162,6 +179,7 @@ export const contractorController = {
   deleteContractor,
   getMyContractorAssignExtermination,
   getAdminContractorAssignExtermination,
+  addAdminContractorAssign,
 
   createStripeAccount,
   getStripeDashboardLink,
