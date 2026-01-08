@@ -351,6 +351,103 @@ const addAdminContractorAssign = async (
   return result;
 };
 
+const getMyAssignContractor = async (
+  userId: string,
+  params: any,
+  options: IOption,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const andCondition: any[] = [];
+  const userSearchableFields = [
+    'companyName',
+    'CompanyAddress',
+    'name',
+    'number',
+    'email',
+    'serviceAreas',
+    'scopeWork',
+    'superContact',
+    'superName',
+  ];
+
+  if (searchTerm) {
+    andCondition.push({
+      $or: userSearchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  andCondition.push({ assigningContractor: user._id });
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  const result = await Contractor.find(whereCondition)
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  const total = await Contractor.countDocuments(whereCondition);
+
+  return {
+    data: result,
+    meta: {
+      total,
+      page,
+      limit,
+    },
+  };
+};
+
+const chargesContractor = async (
+  userId: string,
+  contractorId: string,
+  charges: number,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+  const allowedRoles = [
+    userRole.contractor,
+    userRole.admin,
+    userRole.superadmin,
+  ];
+
+  if (!allowedRoles.includes(user.role as any)) {
+    throw new AppError(403, 'You are not allowed to update charges');
+  }
+
+  const contractor = await Contractor.findById(contractorId);
+  if (!contractor) throw new AppError(404, 'Contractor not found');
+
+  contractor.charges = charges;
+  await contractor.save();
+
+  if (user.role === userRole.admin) {
+    await AdminTracker.create({
+      adminId: user._id,
+      action: 'update',
+      model: 'Contractor',
+      targetId: contractorId,
+      description: 'Contractor charges updated',
+    });
+  }
+
+  return contractor;
+};
+
 const stripe = new Stripe(config.stripe.secretKey!);
 
 /**
@@ -414,6 +511,8 @@ export const contractorService = {
   getMyContractorAssignExtermination,
   getAdminContractorAssignExtermination,
   addAdminContractorAssign,
+  getMyAssignContractor,
+  chargesContractor,
 
   createContractorStripeAccount,
   getStripeDashboardLink,

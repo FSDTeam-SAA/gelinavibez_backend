@@ -16,4 +16,5 @@ export interface IContractor {
   serviceCategory: string[];
   user?: Types.ObjectId;
   assigningContractor?: Types.ObjectId;
+  charges?: number;
 }
