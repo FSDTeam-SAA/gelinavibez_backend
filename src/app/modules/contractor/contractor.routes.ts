@@ -40,9 +40,21 @@ router.post(
   contractorController.createContractor,
 );
 
+
+
 router.get('/', contractorController.getAllContractor);
 router.get('/:id', contractorController.getSingleContractor);
 router.put('/:id', contractorController.updateContractor);
 router.delete('/:id', contractorController.deleteContractor);
+
+
+
+router.put(
+  '/:id/assign-contractor/:assigningContractor',
+  auth(userRole.admin, userRole.superadmin),
+  contractorController.addAdminContractorAssign,
+);
+
+
 
 export const contractorRouter = router;

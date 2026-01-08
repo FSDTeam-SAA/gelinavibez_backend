@@ -15,5 +15,5 @@ export interface IContractor {
   videos: string[];
   serviceCategory: string[];
   user?: Types.ObjectId;
-  assasingContractor?: Types.ObjectId;
+  assigningContractor?: Types.ObjectId;
 }

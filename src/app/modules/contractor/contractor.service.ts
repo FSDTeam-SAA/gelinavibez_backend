@@ -9,6 +9,7 @@ import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { IContractor } from './contractor.interface';
 import Contractor from './contractor.model';
+import AdminTracker from '../admintracker/admintracker.model';
 
 // const createContractor = async (
 //   payload: IContractor,
@@ -314,10 +315,46 @@ const getAdminContractorAssignExtermination = async (
   };
 };
 
+// admin constractor assign request user
+const addAdminContractorAssign = async (
+  adminId: string,
+  contractorId: string,
+  assigningContractor: string,
+) => {
+  const admin = await User.findById(adminId);
+  if (!admin) throw new AppError(404, 'Admin not found');
+
+  const contractor = await Contractor.findById(contractorId);
+  if (!contractor) throw new AppError(404, 'Contractor not found');
+
+  const assignedUser = await User.findById(assigningContractor);
+  if (!assignedUser) throw new AppError(404, 'User not found');
+
+  if (assignedUser.role !== userRole.contractor) {
+    throw new AppError(403, 'Only contractor role can be assigned');
+  }
+
+  const result = await Contractor.findByIdAndUpdate(
+    contractorId,
+    { assigningContractor: assignedUser._id },
+    { new: true },
+  );
+
+  await AdminTracker.create({
+    adminId: admin._id,
+    action: 'add',
+    model: 'Contractor',
+    targetId: contractorId,
+    description: 'Contractor assigned by admin',
+  });
+
+  return result;
+};
+
 const stripe = new Stripe(config.stripe.secretKey!);
 
 /**
- * ✅ Contractor Stripe Express Account তৈরি করা
+ * Contractor Stripe Express Account তৈরি করা
  */
 const createContractorStripeAccount = async (userId: string) => {
   const user = await User.findById(userId);
@@ -353,7 +390,7 @@ const createContractorStripeAccount = async (userId: string) => {
 };
 
 /**
- * ✅ Contractor Dashboard Login Link
+ * Contractor Dashboard Login Link
  */
 const getStripeDashboardLink = async (userId: string) => {
   const user = await User.findById(userId);
@@ -376,6 +413,7 @@ export const contractorService = {
   deleteContractor,
   getMyContractorAssignExtermination,
   getAdminContractorAssignExtermination,
+  addAdminContractorAssign,
 
   createContractorStripeAccount,
   getStripeDashboardLink,
