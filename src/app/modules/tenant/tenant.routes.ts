@@ -10,6 +10,13 @@ router.get(
   auth(userRole.user),
   tenantController.getMyAllTenantApplication,
 );
+//=== landlord ===
+router.get(
+  '/my-landlords',
+  auth(userRole.landlord),
+  tenantController.getMyAllTenantApplicationlandlords,
+);
+//=== landlord ===
 
 router.post(
   '/',
@@ -23,17 +30,21 @@ router.post(
   tenantController.createTenant,
 );
 
-router.get('/', auth(userRole.admin,userRole.superadmin), tenantController.getAllTenantApplication);
+router.get(
+  '/',
+  auth(userRole.admin, userRole.superadmin),
+  tenantController.getAllTenantApplication,
+);
 
 router.get(
   '/:id',
-  auth(userRole.admin, userRole.user,userRole.superadmin),
+  auth(userRole.admin, userRole.user, userRole.superadmin),
   tenantController.getTenantApplication,
 );
 
 router.put(
   '/:id',
-  auth(userRole.user, userRole.admin,userRole.superadmin),
+  auth(userRole.user, userRole.admin, userRole.superadmin),
   fileUploader.upload.fields([
     { name: 'idCard', maxCount: 1 },
     { name: 'ssnDoc', maxCount: 1 },
@@ -45,15 +56,19 @@ router.put(
 
 router.delete(
   '/:id',
-  auth(userRole.user, userRole.admin,userRole.superadmin),
+  auth(userRole.user, userRole.admin, userRole.superadmin),
   tenantController.deleteTenantApplication,
 );
 
 router.patch(
   '/:id/approve',
-  auth(userRole.admin,userRole.superadmin),
+  auth(userRole.admin, userRole.superadmin, userRole.landlord),
   tenantController.approveTenant,
 );
-router.patch('/:id/deny', auth(userRole.admin,userRole.superadmin), tenantController.denyTenant);
+router.patch(
+  '/:id/deny',
+  auth(userRole.admin, userRole.superadmin, userRole.landlord),
+  tenantController.denyTenant,
+);
 
 export const tenantRouter = router;

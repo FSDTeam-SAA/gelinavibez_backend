@@ -19,7 +19,8 @@ const createTenant = catchAsync(async (req, res) => {
 });
 
 const approveTenant = catchAsync(async (req, res) => {
-  const result = await tenantService.approveTenant(req.params.id);
+  const userId = req.user?.id;
+  const result = await tenantService.approveTenant(userId, req.params.id);
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -29,7 +30,8 @@ const approveTenant = catchAsync(async (req, res) => {
 });
 
 const denyTenant = catchAsync(async (req, res) => {
-  const result = await tenantService.denyTenant(req.params.id);
+  const userId = req.user?.id;
+  const result = await tenantService.denyTenant(userId, req.params.id);
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -60,6 +62,30 @@ const getAllTenantApplication = catchAsync(async (req, res) => {
 });
 
 const getMyAllTenantApplication = catchAsync(async (req, res) => {
+  const filters = pick(req.query, [
+    'searchTerm',
+    'firstName',
+    'lastName',
+    'email',
+    'phone',
+    'ssn',
+    'status',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await tenantService.getMyAllTenantApplication(
+    req.user?.id,
+    filters,
+    options,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Tenant applications',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+const getMyAllTenantApplicationlandlords = catchAsync(async (req, res) => {
   const filters = pick(req.query, [
     'searchTerm',
     'firstName',
@@ -125,4 +151,5 @@ export const tenantController = {
   updateTenantApplication,
   deleteTenantApplication,
   getMyAllTenantApplication,
+  getMyAllTenantApplicationlandlords,
 };
