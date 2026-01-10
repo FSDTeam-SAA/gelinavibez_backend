@@ -3,9 +3,9 @@ import { IPayment } from './payment.interface';
 
 const PaymentSchema = new Schema<IPayment>(
   {
-    tenantId: { type: Schema.Types.ObjectId, ref: 'Tenant', required: true },
-    tenantName: { type: String, required: true },
-    tenantEmail: { type: String, required: true },
+    tenantId: { type: Schema.Types.ObjectId, ref: 'Tenant' },
+    tenantName: { type: String },
+    tenantEmail: { type: String },
     amount: { type: Number, default: 20 },
     adminFree: { type: Number },
     contractorFree: { type: Number },
@@ -18,6 +18,11 @@ const PaymentSchema = new Schema<IPayment>(
     stripePaymentIntentId: String,
     paymentDate: Date,
     user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    subscribePlanId: {
+      type: Schema.Types.ObjectId,
+      ref: 'SubscribePlan',
+    },
+    paymentType: { type: String, required: true },
 
     // new fields
     contractor: { type: Schema.Types.ObjectId, ref: 'Contractor' },

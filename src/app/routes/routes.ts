@@ -15,6 +15,7 @@ import { chargeRoutes } from '../modules/charge/charge.routes';
 import { tenantFreeRoutes } from '../modules/tenantFree/tenantFree.routes';
 import { conversationRoutes } from '../modules/conversation/conversation.routes';
 import { messageRoutes } from '../modules/message/message.routes';
+import { subscribePlanRoutes } from '../modules/subscribeplan/subscribeplan.routes';
 
 const router = Router();
 
@@ -82,6 +83,10 @@ const moduleRoutes = [
   {
     path: '/message',
     route: messageRoutes,
+  },
+  {
+    path: '/subscribeplan',
+    route: subscribePlanRoutes,
   },
 ];
 

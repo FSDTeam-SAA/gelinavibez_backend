@@ -3,6 +3,7 @@ import { Document, Types } from 'mongoose';
 export interface IPayment extends Document {
   _id: Types.ObjectId;
   tenantId: Types.ObjectId;
+
   tenantName: string;
   tenantEmail: string;
   amount: number;
@@ -13,6 +14,8 @@ export interface IPayment extends Document {
   stripePaymentIntentId?: string;
   paymentDate?: Date;
   user: Types.ObjectId;
+  subscribePlanId?: Types.ObjectId;
+  paymentType: string;
 
   // new fields
   contractor?: Types.ObjectId; // contractor service

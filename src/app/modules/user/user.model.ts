@@ -30,7 +30,13 @@ const userSchema = new mongoose.Schema<IUser>(
     otp: { type: String },
     otpExpiry: { type: Date },
     verified: { type: Boolean, default: true },
-    stripeAccountId: { type: String },
+    isSubscription: { type: Boolean, default: false },
+    subscription: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'SubscribePlan',
+    },
+    subscriptionExpiry: { type: Date },
+
     requestAdmin: { type: Boolean },
     accessRoutes: [{ type: String }],
   },
