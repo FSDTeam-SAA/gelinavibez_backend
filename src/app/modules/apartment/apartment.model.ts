@@ -87,6 +87,10 @@ const apartmentSchema = new Schema<IApartment>(
       enum: ['approve', 'pending', 'denied'],
       default: 'pending',
     },
+    assasintLandlordId: {
+      type: [Schema.Types.ObjectId],
+      ref: 'User',
+    },
 
     ownerId: {
       type: Schema.Types.ObjectId,
