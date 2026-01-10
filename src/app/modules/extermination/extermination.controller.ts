@@ -90,6 +90,120 @@ const addContractor = catchAsync(async (req, res) => {
   });
 });
 
+const addAdminExterminationAssign = catchAsync(async (req, res) => {
+  const adminId = req.user!.id;
+  const result = await exterminationService.addAdminExterminationAssign(
+    adminId,
+    req.params.id,
+    req.params.assigningExtermination,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Extermination assigned successfully',
+    data: result,
+  });
+});
+
+const getMyAssignExtermination = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const filters = pick(req.query, [
+    'searchTerm',
+    'fullName',
+    'email',
+    'phoneNumber',
+    'propertyAddress',
+    'typeOfProperty',
+    'preferredServiceDate',
+    'preferredTime',
+    'buildingAccessRequired',
+    'contactInfo',
+    'signature',
+    'status',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await exterminationService.getMyAssignExtermination(
+    userId,
+    filters,
+    options,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'My assign extermination retrieved successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
+const chargesExtermination = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+  const { charges } = req.body;
+  const result = await exterminationService.chargesExtermination(
+    userId,
+    id,
+    charges,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Extermination updated charges successfully',
+    data: result,
+  });
+});
+
+const updateStatusAdmin = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+  const { status } = req.body;
+  const result = await exterminationService.updateStatusAdmin(
+    userId,
+    id,
+    status,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Extermination status updated successfully',
+    data: result,
+  });
+});
+
+const getMyExterminationService = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const filters = pick(req.query, [
+    'searchTerm',
+    'fullName',
+    'email',
+    'phoneNumber',
+    'propertyAddress',
+    'typeOfProperty',
+    'preferredServiceDate',
+    'preferredTime',
+    'buildingAccessRequired',
+    'contactInfo',
+    'signature',
+    'status',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await exterminationService.getMyExterminationService(
+    userId,
+    filters,
+    options,
+  );
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'My extermination service fetched successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 export const exterminationController = {
   exterminationCreate,
   getAllExtermination,
@@ -97,4 +211,10 @@ export const exterminationController = {
   updateExtermination,
   deleteExtermination,
   addContractor,
+  addAdminExterminationAssign,
+  updateStatusAdmin,
+  getMyExterminationService,
+
+  getMyAssignExtermination,
+  chargesExtermination,
 };

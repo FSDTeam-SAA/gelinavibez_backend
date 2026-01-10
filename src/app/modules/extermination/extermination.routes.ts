@@ -4,9 +4,32 @@ import { userRole } from '../user/user.constant';
 import { exterminationController } from './extermination.controller';
 const router = express.Router();
 
+//=== update router ===
+router.get(
+  '/my-assign-extermination',
+  auth(userRole.exterminator),
+  exterminationController.getMyAssignExtermination,
+);
+router.put(
+  '/charges/:id',
+  auth(userRole.exterminator, userRole.admin, userRole.superadmin),
+  exterminationController.chargesExtermination,
+);
+router.put(
+  '/status/:id',
+  auth(userRole.admin, userRole.superadmin),
+  exterminationController.updateStatusAdmin,
+);
+router.get(
+  '/my-extermination-service',
+  auth(userRole.user),
+  exterminationController.getMyExterminationService,
+);
+//=== update router ===
+
 router.put(
   '/add-contractor/:id',
-  auth(userRole.admin,userRole.superadmin),
+  auth(userRole.admin, userRole.superadmin),
   exterminationController.addContractor,
 );
 
@@ -17,23 +40,31 @@ router.post(
 );
 router.get(
   '/',
-  auth(userRole.admin,userRole.superadmin),
+  auth(userRole.admin, userRole.superadmin),
   exterminationController.getAllExtermination,
 );
 router.get(
   '/:id',
-  auth(userRole.admin,userRole.superadmin),
+  auth(userRole.admin, userRole.superadmin),
   exterminationController.getSingleExtermination,
 );
 router.put(
   '/:id',
-  auth(userRole.admin,userRole.superadmin),
+  auth(userRole.admin, userRole.superadmin),
   exterminationController.updateExtermination,
 );
 router.delete(
   '/:id',
-  auth(userRole.admin,userRole.superadmin),
+  auth(userRole.admin, userRole.superadmin),
   exterminationController.deleteExtermination,
 );
+
+//=== Admin Routes ===
+router.put(
+  '/:id/assign-extermination/:assigningExtermination',
+  auth(userRole.admin, userRole.superadmin),
+  exterminationController.addAdminExterminationAssign,
+);
+//=== Admin Routes ===
 
 export const exterminationRouter = router;

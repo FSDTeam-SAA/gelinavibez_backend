@@ -72,10 +72,12 @@ router.get('/:id', contractorController.getSingleContractor);
 router.put('/:id', contractorController.updateContractor);
 router.delete('/:id', contractorController.deleteContractor);
 
+// === X ===
 router.put(
   '/:id/assign-contractor/:assigningContractor',
   auth(userRole.admin, userRole.superadmin),
   contractorController.addAdminContractorAssign,
 );
+// === X ===
 
 export const contractorRouter = router;
