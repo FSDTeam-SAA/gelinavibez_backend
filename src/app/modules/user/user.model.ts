@@ -35,6 +35,7 @@ const userSchema = new mongoose.Schema<IUser>(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'SubscribePlan',
     },
+    stripeAccountId: { type: String },
     subscriptionExpiry: { type: Date },
 
     requestAdmin: { type: Boolean },

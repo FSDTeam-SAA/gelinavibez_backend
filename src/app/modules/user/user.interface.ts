@@ -27,4 +27,5 @@ export interface IUser {
   isSubscription?: boolean;
   subscription?: Types.ObjectId;
   subscriptionExpiry?: Date;
+  stripeAccountId?: string;
 }
