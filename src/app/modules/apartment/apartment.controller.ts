@@ -223,6 +223,64 @@ const getAllApartmentLocations = catchAsync(async (req, res) => {
   });
 });
 
+const assasintLandlord = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const result = await apartmentService.assasintLandlord(
+    userId,
+    req.params.landlordId,
+    req.params.id,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Landlord added successfully',
+    data: result,
+  });
+});
+
+const removeLandlord = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const result = await apartmentService.removeLandlord(
+    userId,
+    req.params.landlordId,
+    req.params.id,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Landlord removed successfully',
+    data: result,
+  });
+});
+
+const showAssasintLandlordApartment = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const filters = pick(req.query, [
+    'searchTerm',
+    'title',
+    'description',
+    'aboutListing',
+    'address.street',
+    'address.city',
+    'address.state',
+    'address.zipCode',
+    'amenities',
+    'status',
+    'day',
+  ]);
+  const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
+  const result = await apartmentService.showAssasintLandlordApartment(
+    userId,
+    filters,
+    options,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Landlord added successfully',
+    data: result,
+  });
+});
 
 export const apartmentController = {
   createApartment,
@@ -237,4 +295,7 @@ export const apartmentController = {
   updateMyApartment,
   deleteMyApartment,
   getAllApartmentLocations,
+  assasintLandlord,
+  removeLandlord,
+  showAssasintLandlordApartment,
 };

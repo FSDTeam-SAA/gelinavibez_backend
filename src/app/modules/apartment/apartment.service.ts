@@ -1,6 +1,7 @@
 import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
+import AdminTracker from '../admintracker/admintracker.model';
 import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { IApartment } from './apartment.interface';
@@ -359,7 +360,6 @@ const deleteMyApartment = async (ownerId: string, apartmentId: string) => {
   return { message: 'Apartment deleted successfully' };
 };
 
-
 const getAllApartmentLocations = async () => {
   const locations = await Apartment.aggregate([
     {
@@ -383,6 +383,155 @@ const getAllApartmentLocations = async () => {
     .map((loc) => loc.city);
 };
 
+const assasintLandlord = async (
+  adminIs: string,
+  landlordId: string,
+  apartmentId: string,
+) => {
+  const user = await User.findById(adminIs);
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+  const landlord = await User.findById(landlordId);
+  if (!landlord) {
+    throw new AppError(404, 'Landlord not found');
+  }
+
+  if (!landlord.isSubscription) {
+    throw new AppError(400, 'Landlord is not a subscription user');
+  }
+
+  const apartment = await Apartment.findById(apartmentId);
+  if (!apartment) {
+    throw new AppError(404, 'Apartment not found');
+  }
+
+  const addLandlord = await Apartment.findByIdAndUpdate(
+    apartmentId,
+    {
+      $addToSet: { assasintLandlordId: landlordId },
+    },
+    { new: true },
+  );
+
+  await AdminTracker.create({
+    adminId: user._id,
+    action: 'add',
+    model: 'Apartment',
+    targetId: apartmentId,
+    description: 'Landlord added to apartment',
+  });
+
+  return addLandlord;
+};
+
+const removeLandlord = async (
+  adminIs: string,
+  landlordId: string,
+  apartmentId: string,
+) => {
+  const user = await User.findById(adminIs);
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+  const landlord = await User.findById(landlordId);
+  if (!landlord) {
+    throw new AppError(404, 'Landlord not found');
+  }
+
+  const apartment = await Apartment.findById(apartmentId);
+  if (!apartment) {
+    throw new AppError(404, 'Apartment not found');
+  }
+
+  const removeLandlord = await Apartment.findByIdAndUpdate(
+    apartmentId,
+    {
+      $pull: { assasintLandlordId: landlordId },
+    },
+    { new: true },
+  );
+
+  await AdminTracker.create({
+    adminId: user._id,
+    action: 'remove',
+    model: 'Apartment',
+    targetId: apartmentId,
+    description: 'Landlord removed from apartment',
+  });
+
+  return removeLandlord;
+};
+
+const showAssasintLandlordApartment = async (
+  landlordId: string,
+  params: any,
+  options: IOption,
+) => {
+  const user = await User.findById(landlordId);
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const searchableFields = [
+    'title',
+    'description',
+    'aboutListing',
+    'address.street',
+    'address.city',
+    'address.state',
+    'address.zipCode',
+    'amenities',
+    'status',
+    'day',
+  ];
+
+  const andCondition: any[] = [];
+
+  // Search term
+  if (searchTerm) {
+    andCondition.push({
+      $or: searchableFields.map((field) => {
+        if (field === 'amenities') {
+          return {
+            [field]: { $elemMatch: { $regex: searchTerm, $options: 'i' } },
+          };
+        }
+        return { [field]: { $regex: searchTerm, $options: 'i' } };
+      }),
+    });
+  }
+
+  // Filters
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  andCondition.push({
+    assasintLandlordId: landlordId,
+  });
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+  const result = await Apartment.find(whereCondition)
+    .sort({ [sortBy]: sortOrder } as any)
+    .skip(skip)
+    .limit(limit);
+  const total = await Apartment.countDocuments(whereCondition);
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
 
 export const apartmentService = {
   createApartment,
@@ -397,4 +546,7 @@ export const apartmentService = {
   updateMyApartment,
   deleteMyApartment,
   getAllApartmentLocations,
+  assasintLandlord,
+  removeLandlord,
+  showAssasintLandlordApartment,
 };

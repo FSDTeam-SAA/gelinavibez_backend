@@ -32,6 +32,8 @@ export interface IApartment {
 
   ownerId: Types.ObjectId;
 
+  assasintLandlordId?: Types.ObjectId[];
+
   createdAt?: Date;
   updatedAt?: Date;
 }
