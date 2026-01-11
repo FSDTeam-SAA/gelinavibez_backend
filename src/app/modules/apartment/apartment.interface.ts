@@ -33,6 +33,7 @@ export interface IApartment {
   ownerId: Types.ObjectId;
 
   assasintLandlordId?: Types.ObjectId[];
+  assasintBrokerId?: Types.ObjectId[];
 
   createdAt?: Date;
   updatedAt?: Date;

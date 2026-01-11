@@ -140,6 +140,16 @@ const updateAccessRoutes = catchAsync(async (req, res) => {
   });
 });
 
+const verifiedUser = catchAsync(async (req, res) => {
+  const result = await userService.verifiedUser(req.params.id);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'User verified successfully',
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getAllUser,
@@ -152,4 +162,5 @@ export const userController = {
   allRequestAdmin,
   deleteAdmin,
   updateAccessRoutes,
+  verifiedUser,
 };
