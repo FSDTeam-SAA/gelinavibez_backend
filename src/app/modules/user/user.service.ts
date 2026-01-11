@@ -122,7 +122,7 @@ const updateUserById = async (
   return result;
 };
 
-const deleteUserById = async (userId:string,id: string) => {
+const deleteUserById = async (userId: string, id: string) => {
   const user = await User.findById(userId);
   if (!user) {
     throw new AppError(400, 'User does not exist');
@@ -269,6 +269,33 @@ const updateAccessRoutes = async (userId: string, accessRoutes: string[]) => {
   return result;
 };
 
+const verifiedUser = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
+
+  const result = await User.findByIdAndUpdate(
+    userId,
+    { verified: true },
+    { new: true },
+  );
+
+  if (!result) {
+    throw new AppError(400, 'Something went wrong');
+  }
+
+  await AdminTracker.create({
+    adminId: user._id,
+    action: 'update',
+    model: 'User',
+    targetId: result?._id,
+    description: 'User verified',
+  });
+
+  return result;
+};
+
 export const userService = {
   createUser,
   getAllUser,
@@ -281,4 +308,5 @@ export const userService = {
   allRequestAdmin,
   deleteAdmin,
   updateAccessRoutes,
+  verifiedUser,
 };

@@ -14,6 +14,11 @@ router.get(
   auth(userRole.landlord),
   apartmentController.showAssasintLandlordApartment,
 );
+router.get(
+  '/assasint-broker',
+  auth(userRole.broker),
+  apartmentController.showAssasintBrokerApartment,
+);
 //=== assasint landlord ===
 
 // my apartment-------------------
@@ -88,6 +93,16 @@ router.delete(
   '/:id/assasint-landlord/:landlordId',
   auth(userRole.admin, userRole.superadmin),
   apartmentController.removeLandlord,
+);
+router.put(
+  '/:id/assasint-broker/:brokerId',
+  auth(userRole.admin, userRole.superadmin),
+  apartmentController.assasintBroker,
+);
+router.delete(
+  '/:id/assasint-broker/:brokerId',
+  auth(userRole.admin, userRole.superadmin),
+  apartmentController.removeBroker,
 );
 
 // === assasint landlord ===

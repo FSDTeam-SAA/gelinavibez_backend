@@ -91,6 +91,10 @@ const apartmentSchema = new Schema<IApartment>(
       type: [Schema.Types.ObjectId],
       ref: 'User',
     },
+    assasintBrokerId: {
+      type: [Schema.Types.ObjectId],
+      ref: 'User',
+    },
 
     ownerId: {
       type: Schema.Types.ObjectId,

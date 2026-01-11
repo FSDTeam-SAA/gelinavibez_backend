@@ -63,6 +63,14 @@ router.get(
   auth(userRole.admin, userRole.superadmin),
   userController.getAllUser,
 );
+
+//=== verified user ===
+router.put(
+  '/verified-user/:id',
+  auth(userRole.admin, userRole.superadmin),
+  userController.verifiedUser,
+);
+//=== verified user ===
 router.get(
   '/:id',
   auth(userRole.admin, userRole.superadmin),
