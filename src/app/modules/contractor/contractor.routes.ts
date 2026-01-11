@@ -78,6 +78,12 @@ router.put(
   auth(userRole.admin, userRole.superadmin),
   contractorController.addAdminContractorAssign,
 );
+
+router.post(
+  '/:id/pay-contractor-charge',
+  auth(userRole.user),
+  contractorController.payContractorCharge,
+);
 // === X ===
 
 export const contractorRouter = router;

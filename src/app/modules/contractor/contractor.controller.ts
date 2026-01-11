@@ -233,6 +233,20 @@ const updateStatusAdmin = catchAsync(async (req, res) => {
   });
 });
 
+const payContractorCharge = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+
+  const result = await contractorService.payContractorCharge(userId, id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Contractor charge paid successfully',
+    data: result,
+  });
+});
+
 const createStripeAccount = catchAsync(async (req, res) => {
   const userId = req.user?.id;
   const result = await contractorService.createContractorStripeAccount(userId);
@@ -271,6 +285,7 @@ export const contractorController = {
   chargesContractor,
   updateStatusAdmin,
   getMyContractorService,
+  payContractorCharge,
 
   createStripeAccount,
   getStripeDashboardLink,

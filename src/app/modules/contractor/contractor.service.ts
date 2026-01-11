@@ -10,6 +10,7 @@ import User from '../user/user.model';
 import { IContractor } from './contractor.interface';
 import Contractor from './contractor.model';
 import AdminTracker from '../admintracker/admintracker.model';
+import { Payment } from '../payment/payment.model';
 
 // const createContractor = async (
 //   payload: IContractor,
@@ -133,8 +134,8 @@ const getAllContractor = async (params: any, options: IOption) => {
       [sortBy]: sortOrder,
     } as any)
     .skip(skip)
-    .limit(limit)
-    .populate('service');
+    .limit(limit);
+  // .populate('service');/
 
   if (!result) throw new AppError(400, 'Failed to get contact');
   const total = await Contractor.countDocuments(whereCondition);
@@ -592,6 +593,53 @@ const getStripeDashboardLink = async (userId: string) => {
   };
 };
 
+const payContractorCharge = async (userId: string, constractorId: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const contractor = await Contractor.findById(constractorId);
+  if (!contractor) throw new AppError(404, 'Contractor not found');
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          unit_amount: Number(contractor.charges ?? 0) * 100,
+          product_data: {
+            name: contractor.companyName,
+            description: 'Contractor Charge',
+          },
+        },
+        quantity: 1,
+      },
+    ],
+    customer_email: user.email,
+    success_url: `${config.frontendUrl}/stripe-success`,
+    cancel_url: `${config.frontendUrl}/stripe-cancel`,
+    metadata: {
+      userId: user._id.toString(),
+      contractorId: contractor._id.toString(),
+      paymentType: 'contractorCharge',
+      type: contractor.companyName,
+      amount: Number(contractor.charges ?? 0).toString(),
+    },
+  } as any);
+
+  await Payment.create({
+    user: user._id,
+    contractor: contractor._id,
+    paymentType: 'contractorCharge',
+    amount: Number(contractor.charges ?? 0).toFixed(2),
+    stripeSessionId: session.id,
+    status: 'pending',
+  });
+
+  return { url: session.url, sessionId: session.id };
+};
+
 export const contractorService = {
   createContractor,
   getAllContractor,
@@ -608,4 +656,5 @@ export const contractorService = {
 
   createContractorStripeAccount,
   getStripeDashboardLink,
+  payContractorCharge,
 };

@@ -4,6 +4,7 @@ import { Request, Response } from 'express';
 import { Payment } from '../modules/payment/payment.model';
 import User from '../modules/user/user.model';
 import SubscribePlan from '../modules/subscribeplan/subscribeplan.model';
+import Contractor from '../modules/contractor/contractor.model';
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
@@ -61,6 +62,15 @@ const webHookHandler = async (req: Request, res: Response) => {
         user.subscription = subscription._id;
         user.subscriptionExpiry = expireDate;
         await user.save();
+
+        return res.json({ received: true });
+      }
+      if (paymentType === 'contractorCharge') {
+        const contractor = await Contractor.findById(payment.contractor);
+        if (!contractor) return res.json({ received: true });
+
+        contractor.status = 'completed';
+        await contractor.save();
 
         return res.json({ received: true });
       }
