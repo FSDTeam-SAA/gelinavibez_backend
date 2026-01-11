@@ -65,6 +65,7 @@ const constractorSchema = new mongoose.Schema<IContractor>(
 
     charges: {
       type: Number,
+      
     },
     status: {
       type: String,
