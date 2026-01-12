@@ -134,8 +134,8 @@ const getAllContractor = async (params: any, options: IOption) => {
       [sortBy]: sortOrder,
     } as any)
     .skip(skip)
-    .limit(limit);
-  // .populate('service');/
+    .limit(limit)
+    .populate('service');
 
   if (!result) throw new AppError(400, 'Failed to get contact');
   const total = await Contractor.countDocuments(whereCondition);

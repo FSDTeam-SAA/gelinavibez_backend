@@ -49,9 +49,10 @@ const constractorSchema = new mongoose.Schema<IContractor>(
         type: String,
       },
     ],
-    serviceCategory: [
+    service: [
       {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Service',
       },
     ],
     user: {
@@ -65,7 +66,6 @@ const constractorSchema = new mongoose.Schema<IContractor>(
 
     charges: {
       type: Number,
-      
     },
     status: {
       type: String,
