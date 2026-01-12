@@ -13,7 +13,7 @@ export interface IContractor {
   superName: string;
   images: string[];
   videos: string[];
-  serviceCategory: string[];
+  service: Types.ObjectId[];
   user?: Types.ObjectId;
   assigningContractor?: Types.ObjectId;
   charges?: number;
