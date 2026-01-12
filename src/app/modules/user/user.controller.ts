@@ -150,6 +150,20 @@ const verifiedUser = catchAsync(async (req, res) => {
   });
 });
 
+const updateProfile = catchAsync(async (req, res) => {
+  const file = req.file;
+  const userId = req.user.id;
+  // console.log(file);
+  const fromData = req.body.data ? JSON.parse(req.body.data) : req.body;
+  const result = await userService.updateProfile(userId, fromData, file);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'User updated successfully',
+    data: result,
+  });
+});
+
 export const userController = {
   createUser,
   getAllUser,
@@ -163,4 +177,5 @@ export const userController = {
   deleteAdmin,
   updateAccessRoutes,
   verifiedUser,
+  updateProfile,
 };

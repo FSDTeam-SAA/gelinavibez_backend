@@ -37,7 +37,7 @@ router.put(
     userRole.broker,
   ),
   fileUploader.upload.single('profileImage'),
-  userController.updateUserById,
+  userController.updateProfile,
 );
 
 // request admin

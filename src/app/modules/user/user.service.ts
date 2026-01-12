@@ -147,6 +147,26 @@ const profile = async (id: string) => {
   return result;
 };
 
+const updateProfile = async (
+  userId: string,
+  payload: IUser,
+  file?: Express.Multer.File,
+) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
+  if (file) {
+    const uploadProfile = await fileUploader.uploadToCloudinary(file);
+    if (!uploadProfile?.secure_url) {
+      throw new AppError(400, 'Failed to upload profile image');
+    }
+    payload.profileImage = uploadProfile.secure_url;
+  }
+  const result = await User.findByIdAndUpdate(user._id, payload, { new: true });
+  return result;
+};
+
 const requestAdmin = async (userId: string) => {
   const user = await User.findById(userId);
   if (!user) {
@@ -309,4 +329,5 @@ export const userService = {
   deleteAdmin,
   updateAccessRoutes,
   verifiedUser,
+  updateProfile
 };
