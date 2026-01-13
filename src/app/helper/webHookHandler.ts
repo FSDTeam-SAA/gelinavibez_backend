@@ -6,6 +6,7 @@ import User from '../modules/user/user.model';
 import SubscribePlan from '../modules/subscribeplan/subscribeplan.model';
 import Contractor from '../modules/contractor/contractor.model';
 import Extermination from '../modules/extermination/extermination.model';
+import Tenant from '../modules/tenant/tenant.model';
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
@@ -37,6 +38,7 @@ const webHookHandler = async (req: Request, res: Response) => {
       if (!user) {
         return res.status(404).send('User not found');
       }
+
       payment.status = 'approved';
       payment.stripePaymentIntentId = session.payment_intent as string;
       payment.paymentDate = new Date();
@@ -87,6 +89,16 @@ const webHookHandler = async (req: Request, res: Response) => {
 
         return res.json({ received: true });
       }
+
+      // if (paymentType === 'applicationFee') {
+      //   const tenant = await Tenant.findById(payment.tenantId);
+      //   if (!tenant) return res.json({ received: true });
+
+      //   tenant.status = 'approved';
+      //   await tenant.save();
+
+      //   return res.json({ received: true });
+      // }
 
       return res.status(200).send('Payment completed');
     }

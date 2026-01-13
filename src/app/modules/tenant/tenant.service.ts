@@ -14,9 +14,7 @@ import { userRole } from '../user/user.constant';
 import AdminTracker from '../admintracker/admintracker.model';
 import Apartment from '../apartment/apartment.model';
 
-const stripe = new Stripe(config.stripe.secretKey!, {
-  apiVersion: '2023-10-16' as any,
-});
+const stripe = new Stripe(config.stripe.secretKey!);
 
 // Tenant create + Payment create + Stripe session
 const createTenant = async (
@@ -51,37 +49,46 @@ const createTenant = async (
   // Tenant create
   const tenant = await Tenant.create({ ...payload, createBy: user._id });
 
+  // Stripe checkout session (manual capture)
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    payment_method_types: ['card'],
+    payment_intent_data: {
+      capture_method: 'manual',
+    },
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          unit_amount: adminFee * 100,
+          product_data: {
+            name: 'Tenant Fee',
+            description: 'Tenant application fee',
+          },
+        },
+        quantity: 1,
+      },
+    ],
+    customer_email: tenant.email,
+    success_url: `${config.frontendUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${config.frontendUrl}/payment-cancel`,
+    metadata: {
+      userId: user._id.toString(),
+      tenantId: tenant._id.toString(),
+      paymentType: 'applicationFee',
+      type: user.firstName,
+      amount: Number(adminFee).toString(),
+    },
+  });
+
   // Payment create
   const payment = await Payment.create({
     tenantId: tenant._id,
     tenantName: `${tenant.firstName} ${tenant.lastName}`,
     tenantEmail: tenant.email,
+    paymentType: 'applicationFee',
     amount: adminFee,
     user: user._id,
-  });
-
-  // Stripe checkout session (manual capture)
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card'],
-    mode: 'payment',
-    customer_email: tenant.email,
-    payment_intent_data: { capture_method: 'manual' },
-    line_items: [
-      {
-        price_data: {
-          currency: 'usd',
-          product_data: { name: 'Tenant Fee' },
-          unit_amount: adminFee * 100,
-        },
-        quantity: 1,
-      },
-    ],
-    success_url: `${config.frontendUrl}/payment-success?session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${config.frontendUrl}/payment-cancel`,
-    metadata: {
-      tenantId: tenant._id.toString(),
-      paymentId: payment._id.toString(),
-    },
   });
 
   // Stripe session ID save
@@ -434,7 +441,6 @@ const deleteTenantApplication = async (tenantId: string) => {
   return tenant;
 };
 
-
 const getMyAllTenantApplicationlandlords = async (
   userId: string,
   params: any,
@@ -476,7 +482,8 @@ const getMyAllTenantApplicationlandlords = async (
     });
   }
 
-  const whereCondition: any = addCondition.length > 0 ? { $and: addCondition } : {};
+  const whereCondition: any =
+    addCondition.length > 0 ? { $and: addCondition } : {};
 
   // ====== Restrict by apartment assignment for assistant landlords ======
   if (user.role === userRole.landlord) {
@@ -508,7 +515,6 @@ const getMyAllTenantApplicationlandlords = async (
   };
 };
 
-
 export const tenantService = {
   createTenant,
   approveTenant,
@@ -518,5 +524,5 @@ export const tenantService = {
   updateTenantApplication,
   deleteTenantApplication,
   getMyAllTenantApplication,
-  getMyAllTenantApplicationlandlords
+  getMyAllTenantApplicationlandlords,
 };
