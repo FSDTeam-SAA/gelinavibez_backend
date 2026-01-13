@@ -3,7 +3,7 @@ import config from '../../config';
 import AppError from '../../error/appError';
 import { fileUploader } from '../../helper/fileUploder';
 import pagination, { IOption } from '../../helper/pagenation';
-import sendMailer from '../../helper/sendMailer';
+// import sendMailer from '../../helper/sendMailer';
 import Extermination from '../extermination/extermination.model';
 import { userRole } from '../user/user.constant';
 import User from '../user/user.model';

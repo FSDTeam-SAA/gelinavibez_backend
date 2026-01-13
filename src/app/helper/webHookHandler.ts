@@ -5,6 +5,7 @@ import { Payment } from '../modules/payment/payment.model';
 import User from '../modules/user/user.model';
 import SubscribePlan from '../modules/subscribeplan/subscribeplan.model';
 import Contractor from '../modules/contractor/contractor.model';
+import Extermination from '../modules/extermination/extermination.model';
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
@@ -74,6 +75,19 @@ const webHookHandler = async (req: Request, res: Response) => {
 
         return res.json({ received: true });
       }
+
+      if (paymentType === 'exterminationCharge') {
+        const extermination = await Extermination.findById(
+          payment.extermination,
+        );
+        if (!extermination) return res.json({ received: true });
+
+        extermination.status = 'completed';
+        await extermination.save();
+
+        return res.json({ received: true });
+      }
+
       return res.status(200).send('Payment completed');
     }
   } catch (error) {
