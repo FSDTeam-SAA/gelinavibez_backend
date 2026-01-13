@@ -204,6 +204,19 @@ const getMyExterminationService = catchAsync(async (req, res) => {
   });
 });
 
+const payExterminationCharge = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const { id } = req.params;
+  const result = await exterminationService.payExterminationCharge(userId, id);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Extermination charge paid successfully',
+    data: result,
+  });
+});
+
 export const exterminationController = {
   exterminationCreate,
   getAllExtermination,
@@ -214,7 +227,7 @@ export const exterminationController = {
   addAdminExterminationAssign,
   updateStatusAdmin,
   getMyExterminationService,
-
+  payExterminationCharge,
   getMyAssignExtermination,
   chargesExtermination,
 };

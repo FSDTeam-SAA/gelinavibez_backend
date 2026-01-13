@@ -1,3 +1,4 @@
+import Stripe from 'stripe';
 import AppError from '../../error/appError';
 import pagination, { IOption } from '../../helper/pagenation';
 import AdminTracker from '../admintracker/admintracker.model';
@@ -5,6 +6,8 @@ import { userRole } from '../user/user.constant';
 import User from '../user/user.model';
 import { IExtermination } from './extermination.interface';
 import Extermination from './extermination.model';
+import config from '../../config';
+import { Payment } from '../payment/payment.model';
 
 const exterminationCreate = async (userId: string, payload: IExtermination) => {
   const user = await User.findById(userId);
@@ -324,6 +327,58 @@ const updateStatusAdmin = async (
   return result;
 };
 
+const stripe = new Stripe(config.stripe.secretKey!);
+
+const payExterminationCharge = async (
+  userId: string,
+  exterminationId: string,
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(404, 'User not found');
+
+  const extermination = await Extermination.findById(exterminationId);
+  if (!extermination) throw new AppError(404, 'Extermination not found');
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'payment',
+    payment_method_types: ['card'],
+    line_items: [
+      {
+        price_data: {
+          currency: 'usd',
+          unit_amount: Number(extermination.charges ?? 0) * 100,
+          product_data: {
+            name: user.firstName,
+            description: 'Extermination Charge',
+          },
+        },
+        quantity: 1,
+      },
+    ],
+    customer_email: user.email,
+    success_url: `${config.frontendUrl}/stripe-success`,
+    cancel_url: `${config.frontendUrl}/stripe-cancel`,
+    metadata: {
+      userId: user._id.toString(),
+      exterminationId: extermination._id.toString(),
+      paymentType: 'exterminationCharge',
+      type: user.firstName + ' ' + user.lastName,
+      amount: Number(extermination.charges ?? 0).toString(),
+    },
+  } as any);
+
+  await Payment.create({
+    user: user._id,
+    extermination: extermination._id,
+    paymentType: 'exterminationCharge',
+    amount: Number(extermination.charges ?? 0).toFixed(2),
+    stripeSessionId: session.id,
+    status: 'pending',
+  });
+
+  return { url: session.url, sessionId: session.id };
+};
+
 export const exterminationService = {
   exterminationCreate,
   getAllExtermination,
@@ -333,6 +388,7 @@ export const exterminationService = {
   addContractor,
   getMyExterminationService,
   updateStatusAdmin,
+  payExterminationCharge,
 
   addAdminExterminationAssign,
   getMyAssignExtermination,

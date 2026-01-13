@@ -65,6 +65,13 @@ router.put(
   auth(userRole.admin, userRole.superadmin),
   exterminationController.addAdminExterminationAssign,
 );
+
+router.post(
+  '/:id/pay-extermination-charge',
+  auth(userRole.user),
+  exterminationController.payExterminationCharge,
+);
+
 //=== Admin Routes ===
 
 export const exterminationRouter = router;
