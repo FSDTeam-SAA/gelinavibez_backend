@@ -609,7 +609,6 @@ const removeBroker = async (
   return removeBroker;
 };
 
-
 const showAssasintBrokerApartment = async (
   brokerId: string,
   params: any,
@@ -661,7 +660,7 @@ const showAssasintBrokerApartment = async (
   }
 
   andCondition.push({
-    assasintBrokers: brokerId,
+    assasintBrokerId: brokerId,
   });
 
   const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
@@ -698,5 +697,5 @@ export const apartmentService = {
   showAssasintLandlordApartment,
   assasintBrokers,
   removeBroker,
-  showAssasintBrokerApartment
+  showAssasintBrokerApartment,
 };
