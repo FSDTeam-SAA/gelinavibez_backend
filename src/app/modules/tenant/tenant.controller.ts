@@ -96,7 +96,7 @@ const getMyAllTenantApplicationlandlords = catchAsync(async (req, res) => {
     'status',
   ]);
   const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
-  const result = await tenantService.getMyAllTenantApplication(
+  const result = await tenantService.getMyAllTenantApplicationlandlords(
     req.user?.id,
     filters,
     options,
