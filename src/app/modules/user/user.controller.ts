@@ -141,7 +141,8 @@ const updateAccessRoutes = catchAsync(async (req, res) => {
 });
 
 const verifiedUser = catchAsync(async (req, res) => {
-  const result = await userService.verifiedUser(req.params.id);
+  const userId = req.user.id;
+  const result = await userService.verifiedUser(userId, req.params.id);
   sendResponse(res, {
     statusCode: 200,
     success: true,
