@@ -66,10 +66,16 @@ router.get(
 
 //=== verified user ===
 router.put(
-  '/verified-user/:id',
+  '/approved-user/:id',
   auth(userRole.admin, userRole.superadmin),
-  userController.verifiedUser,
+  userController.approvedLandlordBrokerAdmin,
 );
+router.put(
+  '/rejected-user/:id',
+  auth(userRole.admin, userRole.superadmin),
+  userController.rejectedLandlordBrokerAdmin,
+);
+
 //=== verified user ===
 router.get(
   '/:id',

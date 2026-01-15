@@ -18,8 +18,12 @@ const registerUser = async (payload: Partial<IUser>) => {
   const idx = Math.floor(Math.random() * 100);
   payload.profileImage = `https://avatar.iran.liara.run/public/${idx}.png`;
 
-  if(payload.role === userRole.admin || payload.role === userRole.broker || payload.role === userRole.landlord){
-    payload.verified = false;
+  if (
+    payload.role === userRole.admin ||
+    payload.role === userRole.broker ||
+    payload.role === userRole.landlord
+  ) {
+    payload.approvedLandlordBrokerAdmin = 'pending';
   }
 
   const user = await User.create(payload);
@@ -37,6 +41,11 @@ const loginUser = async (payload: Partial<IUser>) => {
   );
   if (!isPasswordMatched) throw new AppError(401, 'Password not matched');
   if (!user.verified) throw new AppError(403, 'Please verify your email first');
+  if (
+    user.approvedLandlordBrokerAdmin === 'pending' ||
+    user.approvedLandlordBrokerAdmin === 'rejected'
+  )
+    throw new AppError(403, 'Please wait for admin approval');
 
   const accessToken = jwtHelpers.genaretToken(
     { id: user._id, role: user.role, email: user.email },

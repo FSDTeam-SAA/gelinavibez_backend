@@ -289,7 +289,7 @@ const updateAccessRoutes = async (userId: string, accessRoutes: string[]) => {
   return result;
 };
 
-const verifiedUser = async (userId: string, id: string) => {
+const approvedLandlordBrokerAdmin = async (userId: string, id: string) => {
   const user = await User.findById(userId);
   if (!user) {
     throw new AppError(400, 'User does not exist');
@@ -300,11 +300,9 @@ const verifiedUser = async (userId: string, id: string) => {
     throw new AppError(400, 'User does not exist');
   }
 
-  const verifiedUser = userById.verified ? false : true;
-
   const result = await User.findByIdAndUpdate(
     id,
-    { verified: verifiedUser },
+    { approvedLandlordBrokerAdmin: 'approved' },
     { new: true },
   );
 
@@ -317,7 +315,38 @@ const verifiedUser = async (userId: string, id: string) => {
     action: 'update',
     model: 'User',
     targetId: result?._id,
-    description: 'User verified',
+    description: `User approved ${userById.role}`,
+  });
+
+  return result;
+};
+const rejectedLandlordBrokerAdmin = async (userId: string, id: string) => {
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(400, 'User does not exist');
+  }
+
+  const userById = await User.findById(id);
+  if (!userById) {
+    throw new AppError(400, 'User does not exist');
+  }
+
+  const result = await User.findByIdAndUpdate(
+    id,
+    { approvedLandlordBrokerAdmin: 'rejected' },
+    { new: true },
+  );
+
+  if (!result) {
+    throw new AppError(400, 'Something went wrong');
+  }
+
+  await AdminTracker.create({
+    adminId: user._id,
+    action: 'update',
+    model: 'User',
+    targetId: result?._id,
+    description: `User rejected ${userById.role}`,
   });
 
   return result;
@@ -335,6 +364,7 @@ export const userService = {
   allRequestAdmin,
   deleteAdmin,
   updateAccessRoutes,
-  verifiedUser,
   updateProfile,
+  approvedLandlordBrokerAdmin,
+  rejectedLandlordBrokerAdmin,
 };
