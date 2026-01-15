@@ -289,14 +289,19 @@ const updateAccessRoutes = async (userId: string, accessRoutes: string[]) => {
   return result;
 };
 
-const verifiedUser = async (userId: string) => {
+const verifiedUser = async (userId: string, id: string) => {
   const user = await User.findById(userId);
   if (!user) {
     throw new AppError(400, 'User does not exist');
   }
 
+  const userById = await User.findById(id);
+  if (!userById) {
+    throw new AppError(400, 'User does not exist');
+  }
+
   const result = await User.findByIdAndUpdate(
-    userId,
+    id,
     { verified: true },
     { new: true },
   );
@@ -329,5 +334,5 @@ export const userService = {
   deleteAdmin,
   updateAccessRoutes,
   verifiedUser,
-  updateProfile
+  updateProfile,
 };
