@@ -28,4 +28,5 @@ export interface IUser {
   subscription?: Types.ObjectId;
   subscriptionExpiry?: Date;
   stripeAccountId?: string;
+  approvedLandlordBrokerAdmin?: 'pending' | 'approved' | 'rejected';
 }

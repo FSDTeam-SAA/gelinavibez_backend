@@ -140,13 +140,30 @@ const updateAccessRoutes = catchAsync(async (req, res) => {
   });
 });
 
-const verifiedUser = catchAsync(async (req, res) => {
+const approvedLandlordBrokerAdmin = catchAsync(async (req, res) => {
   const userId = req.user.id;
-  const result = await userService.verifiedUser(userId, req.params.id);
+  const result = await userService.approvedLandlordBrokerAdmin(
+    userId,
+    req.params.id,
+  );
   sendResponse(res, {
     statusCode: 200,
     success: true,
-    message: 'User verified successfully',
+    message: 'User approved successfully',
+    data: result,
+  });
+});
+
+const rejectedLandlordBrokerAdmin = catchAsync(async (req, res) => {
+  const userId = req.user.id;
+  const result = await userService.rejectedLandlordBrokerAdmin(
+    userId,
+    req.params.id,
+  );
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'User rejected successfully',
     data: result,
   });
 });
@@ -177,6 +194,7 @@ export const userController = {
   allRequestAdmin,
   deleteAdmin,
   updateAccessRoutes,
-  verifiedUser,
+  approvedLandlordBrokerAdmin,
+  rejectedLandlordBrokerAdmin,
   updateProfile,
 };
