@@ -16,6 +16,7 @@ import { tenantFreeRoutes } from '../modules/tenantFree/tenantFree.routes';
 import { conversationRoutes } from '../modules/conversation/conversation.routes';
 import { messageRoutes } from '../modules/message/message.routes';
 import { subscribePlanRoutes } from '../modules/subscribeplan/subscribeplan.routes';
+import { adminTrackerRoutes } from '../modules/admintracker/admintracker.routes';
 
 const router = Router();
 
@@ -87,6 +88,10 @@ const moduleRoutes = [
   {
     path: '/subscribeplan',
     route: subscribePlanRoutes,
+  },
+  {
+    path: '/admin-tracker',
+    route: adminTrackerRoutes,
   },
 ];
 
