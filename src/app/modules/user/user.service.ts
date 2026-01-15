@@ -300,9 +300,11 @@ const verifiedUser = async (userId: string, id: string) => {
     throw new AppError(400, 'User does not exist');
   }
 
+  const verifiedUser = userById.verified ? false : true;
+
   const result = await User.findByIdAndUpdate(
     id,
-    { verified: true },
+    { verified: verifiedUser },
     { new: true },
   );
 
