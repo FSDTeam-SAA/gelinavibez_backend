@@ -2,6 +2,7 @@ import catchAsync from '../../utils/catchAsycn';
 import sendResponse from '../../utils/sendResponse';
 import pick from '../../helper/pick';
 import { userService } from './user.service';
+// import User from '../user/user.model';
 
 const createUser = catchAsync(async (req, res) => {
   const userId = req.user.id;
@@ -182,6 +183,20 @@ const updateProfile = catchAsync(async (req, res) => {
   });
 });
 
+// const grantMessagingPermission = catchAsync(async (req, res) => {
+//   const { userId, targetUserId } = req.body;
+
+//   await User.findByIdAndUpdate(userId, {
+//     $addToSet: { messagingPermissions: targetUserId },
+//   });
+
+//   sendResponse(res, {
+//     statusCode: 200,
+//     success: true,
+//     message: 'Messaging permission granted',
+//   });
+// });
+
 export const userController = {
   createUser,
   getAllUser,
@@ -197,4 +212,5 @@ export const userController = {
   approvedLandlordBrokerAdmin,
   rejectedLandlordBrokerAdmin,
   updateProfile,
+  // grantMessagingPermission,
 };

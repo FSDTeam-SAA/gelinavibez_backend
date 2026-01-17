@@ -44,6 +44,12 @@ const userSchema = new mongoose.Schema<IUser>(
 
     requestAdmin: { type: Boolean },
     accessRoutes: [{ type: String }],
+    messagingPermissions: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+      },
+    ],
   },
   { timestamps: true },
 );
