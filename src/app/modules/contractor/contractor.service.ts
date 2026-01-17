@@ -11,6 +11,7 @@ import { IContractor } from './contractor.interface';
 import Contractor from './contractor.model';
 import AdminTracker from '../admintracker/admintracker.model';
 import { Payment } from '../payment/payment.model';
+import { cleanRegex } from 'zod/v4/core/util.cjs';
 
 // const createContractor = async (
 //   payload: IContractor,
@@ -512,6 +513,7 @@ const getMyContractorService = async (
 };
 
 const allRequestCharge = async (params: any, options: IOption) => {
+  
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
   const { searchTerm, ...filterData } = params;
 
@@ -530,7 +532,7 @@ const allRequestCharge = async (params: any, options: IOption) => {
   ];
 
   andCondition.push({
-    addAdminContractorAssign: { $exists: true, $ne: null },
+    assigningContractor: { $exists: true, $ne: null },
     charges: { $exists: true, $ne: null },
     status: 'pending',
   });
