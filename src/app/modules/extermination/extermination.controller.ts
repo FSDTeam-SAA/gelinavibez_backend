@@ -204,6 +204,33 @@ const getMyExterminationService = catchAsync(async (req, res) => {
   });
 });
 
+const getRequestCharge = catchAsync(async (req, res) => {
+  const filters = pick(req.query, [
+    'searchTerm',
+    'fullName',
+    'email',
+    'phoneNumber',
+    'propertyAddress',
+    'typeOfProperty',
+    'preferredServiceDate',
+    'preferredTime',
+    'buildingAccessRequired',
+    'contactInfo',
+    'signature',
+    'status',
+  ]);
+  const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+  const result = await exterminationService.allRequestCharge(filters, options);
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Request charge fetched successfully',
+    meta: result.meta,
+    data: result.data,
+  });
+});
+
 const payExterminationCharge = catchAsync(async (req, res) => {
   const userId = req.user?.id;
   const { id } = req.params;
@@ -228,6 +255,7 @@ export const exterminationController = {
   updateStatusAdmin,
   getMyExterminationService,
   payExterminationCharge,
+  getRequestCharge,
   getMyAssignExtermination,
   chargesExtermination,
 };

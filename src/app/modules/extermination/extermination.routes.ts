@@ -25,6 +25,12 @@ router.get(
   auth(userRole.user),
   exterminationController.getMyExterminationService,
 );
+
+router.get(
+  '/request-charge',
+  auth(userRole.admin, userRole.superadmin),
+  exterminationController.getRequestCharge,
+);
 //=== update router ===
 
 router.put(

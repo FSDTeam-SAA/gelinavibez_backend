@@ -379,6 +379,66 @@ const payExterminationCharge = async (
   return { url: session.url, sessionId: session.id };
 };
 
+const allRequestCharge = async (params: any, options: IOption) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const andCondition: any[] = [];
+  const userSearchableFields = [
+    'fullName',
+    'email',
+    'phoneNumber',
+    'propertyAddress',
+    'typeOfProperty',
+    'preferredServiceDate',
+    'preferredTime',
+    'buildingAccessRequired',
+    'contactInfo',
+    'signature',
+    'status',
+  ];
+
+  andCondition.push({
+    assigningExtermination: { $exists: true, $ne: null },
+    charges: { $exists: true, $ne: null },
+    status: 'pending',
+  });
+
+  if (searchTerm) {
+    andCondition.push({
+      $or: userSearchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  const result = await Extermination.find(whereCondition)
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  const total = await Extermination.countDocuments(whereCondition);
+
+  return {
+    data: result,
+    meta: {
+      total,
+      page,
+      limit,
+    },
+  };
+};
+
 export const exterminationService = {
   exterminationCreate,
   getAllExtermination,
@@ -389,6 +449,7 @@ export const exterminationService = {
   getMyExterminationService,
   updateStatusAdmin,
   payExterminationCharge,
+  allRequestCharge,
 
   addAdminExterminationAssign,
   getMyAssignExtermination,
