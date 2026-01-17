@@ -44,6 +44,12 @@ router.get(
   contractorController.getMyContractorService,
 );
 
+router.get(
+  '/request-charge',
+  auth(userRole.admin, userRole.superadmin),
+  contractorController.allRequestCharge,
+);
+
 // === X ===
 
 router.get(

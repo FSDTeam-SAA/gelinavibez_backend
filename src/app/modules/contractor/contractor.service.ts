@@ -511,6 +511,65 @@ const getMyContractorService = async (
   };
 };
 
+const allRequestCharge = async (params: any, options: IOption) => {
+  const { page, limit, skip, sortBy, sortOrder } = pagination(options);
+  const { searchTerm, ...filterData } = params;
+
+  const andCondition: any[] = [];
+  const userSearchableFields = [
+    'companyName',
+    'CompanyAddress',
+    'name',
+    'number',
+    'email',
+    'serviceAreas',
+    'scopeWork',
+    'superContact',
+    'superName',
+    'status',
+  ];
+
+  andCondition.push({
+    addAdminContractorAssign: { $exists: true, $ne: null },
+    charges: { $exists: true, $ne: null },
+    status: 'pending',
+  });
+
+  if (searchTerm) {
+    andCondition.push({
+      $or: userSearchableFields.map((field) => ({
+        [field]: { $regex: searchTerm, $options: 'i' },
+      })),
+    });
+  }
+
+  if (Object.keys(filterData).length) {
+    andCondition.push({
+      $and: Object.entries(filterData).map(([field, value]) => ({
+        [field]: value,
+      })),
+    });
+  }
+
+  const whereCondition = andCondition.length > 0 ? { $and: andCondition } : {};
+
+  const result = await Contractor.find(whereCondition)
+    .skip(skip)
+    .limit(limit)
+    .sort({ [sortBy]: sortOrder } as any);
+
+  const total = await Contractor.countDocuments(whereCondition);
+
+  return {
+    data: result,
+    meta: {
+      total,
+      page,
+      limit,
+    },
+  };
+};
+
 const updateStatusAdmin = async (
   userId: string,
   constractorId: string,
@@ -653,6 +712,7 @@ export const contractorService = {
   chargesContractor,
   updateStatusAdmin,
   getMyContractorService,
+  allRequestCharge,
 
   createContractorStripeAccount,
   getStripeDashboardLink,
