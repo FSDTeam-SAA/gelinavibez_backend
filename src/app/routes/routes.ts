@@ -17,6 +17,7 @@ import { conversationRoutes } from '../modules/conversation/conversation.routes'
 import { messageRoutes } from '../modules/message/message.routes';
 import { subscribePlanRoutes } from '../modules/subscribeplan/subscribeplan.routes';
 import { adminTrackerRoutes } from '../modules/admintracker/admintracker.routes';
+import { messagingRequestRoutes } from '../modules/messagingRequest/messagingRequest.routes';
 
 const router = Router();
 
@@ -92,6 +93,10 @@ const moduleRoutes = [
   {
     path: '/admin-tracker',
     route: adminTrackerRoutes,
+  },
+  {
+    path: '/messaging-request',
+    route: messagingRequestRoutes,
   },
 ];
 

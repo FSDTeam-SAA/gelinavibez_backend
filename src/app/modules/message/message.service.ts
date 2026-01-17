@@ -3,8 +3,21 @@ import { IMessage } from './message.interface';
 import AppError from '../../error/appError';
 
 // Create message
+// const createMessage = async (userId: string, payload: IMessage) => {
+//   const message = await Message.create({ ...payload, senderId: userId });
+//   return message;
+// };
+
+import { canMessage } from '../../utils/canMessage';
+
 const createMessage = async (userId: string, payload: IMessage) => {
-  const message = await Message.create({ ...payload, senderId: userId });
+  await canMessage(userId, payload.receiverId.toString());
+
+  const message = await Message.create({
+    ...payload,
+    senderId: userId,
+  });
+
   return message;
 };
 

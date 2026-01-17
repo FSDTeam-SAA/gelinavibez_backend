@@ -76,6 +76,12 @@ router.put(
   userController.rejectedLandlordBrokerAdmin,
 );
 
+// router.post(
+//   '/grant',
+//   auth(userRole.admin, userRole.superadmin),
+//   userController.grantMessagingPermission,
+// );
+
 //=== verified user ===
 router.get(
   '/:id',

@@ -34,10 +34,17 @@ import { userRole } from '../user/user.constant';
 //   return conversations;
 // };
 
+//====================================
+
+import { canMessage } from '../../utils/canMessage';
+
 const createConversation = async (userId: string, receiverId: string) => {
   if (userId === receiverId) {
     throw new AppError(400, "You can't chat with yourself");
   }
+
+  //  Permission Check
+  await canMessage(userId, receiverId);
 
   const existing = await Conversation.findOne({
     members: { $all: [userId, receiverId] },
@@ -49,6 +56,24 @@ const createConversation = async (userId: string, receiverId: string) => {
     members: [userId, receiverId],
   });
 };
+
+//======================================
+
+// const createConversation = async (userId: string, receiverId: string) => {
+//   if (userId === receiverId) {
+//     throw new AppError(400, "You can't chat with yourself");
+//   }
+
+//   const existing = await Conversation.findOne({
+//     members: { $all: [userId, receiverId] },
+//   });
+
+//   if (existing) return existing;
+
+//   return await Conversation.create({
+//     members: [userId, receiverId],
+//   });
+// };
 
 // ADMIN / SUPERADMIN CAN SEE ALL
 const getAllConversations = async (userId: string) => {
