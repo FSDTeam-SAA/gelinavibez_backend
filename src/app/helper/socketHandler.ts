@@ -109,57 +109,114 @@
 
 //=======================================================================
 
-import { Server, Socket } from 'socket.io';
-import Message from '../modules/message/message.model';
-import { canMessage } from '../utils/canMessage';
+// import { Server, Socket } from 'socket.io';
+// import Message from '../modules/message/message.model';
+// import { canMessage } from '../utils/canMessage';
 
-const users: { userId: string; socketId: string }[] = [];
+// const users: { userId: string; socketId: string }[] = [];
+
+// export const socketHandler = (io: Server) => {
+//   io.on('connection', (socket: Socket) => {
+//     socket.on('addUser', (userId: string) => {
+//       const existing = users.find((u) => u.userId === userId);
+//       if (existing) {
+//         existing.socketId = socket.id;
+//       } else {
+//         users.push({ userId, socketId: socket.id });
+//       }
+//       io.emit('getUsers', users);
+//     });
+
+//     socket.on(
+//       'sendMessage',
+//       async ({ senderId, receiverId, conversationId, message }) => {
+//         try {
+//           await canMessage(senderId, receiverId);
+
+//           const newMsg = await Message.create({
+//             senderId,
+//             receiverId,
+//             conversationId,
+//             message,
+//           });
+
+//           const data = newMsg.toObject();
+
+//           const receiver = users.find((u) => u.userId === receiverId);
+//           if (receiver) {
+//             io.to(receiver.socketId).emit('receiveMessage', data);
+//           }
+
+//           socket.emit('messageSent', data);
+//         } catch (error: any) {
+//           socket.emit('messageError', {
+//             error: error.message,
+//           });
+//         }
+//       },
+//     );
+
+//     socket.on('disconnect', () => {
+//       const index = users.findIndex((u) => u.socketId === socket.id);
+//       if (index !== -1) users.splice(index, 1);
+//       io.emit('getUsers', users);
+//     });
+//   });
+// };
+
+
+//==========================================================================
+
+// socketHandler.ts
+import { Server, Socket } from 'socket.io';
+import { canMessage } from '../utils/canMessage';
+import Message from '../modules/message/message.model';
+
+interface IUserSocket {
+  userId: string;
+  socketId: string;
+}
+
+const users: IUserSocket[] = [];
 
 export const socketHandler = (io: Server) => {
   io.on('connection', (socket: Socket) => {
+    console.log('✅ User connected:', socket.id);
+
+    // Add user
     socket.on('addUser', (userId: string) => {
-      const existing = users.find((u) => u.userId === userId);
-      if (existing) {
-        existing.socketId = socket.id;
-      } else {
-        users.push({ userId, socketId: socket.id });
-      }
+      const existing = users.find(u => u.userId === userId);
+      if (existing) existing.socketId = socket.id;
+      else users.push({ userId, socketId: socket.id });
       io.emit('getUsers', users);
     });
 
-    socket.on(
-      'sendMessage',
-      async ({ senderId, receiverId, conversationId, message }) => {
-        try {
-          await canMessage(senderId, receiverId);
+    // Send message
+    socket.on('sendMessage', async ({ senderId, receiverId, conversationId, message }) => {
+      try {
+        await canMessage(senderId, receiverId);
 
-          const newMsg = await Message.create({
-            senderId,
-            receiverId,
-            conversationId,
-            message,
-          });
+        const newMsg = await Message.create({ senderId, receiverId, conversationId, message });
 
-          const data = newMsg.toObject();
+        // Emit to receiver if online
+        const receiver = users.find(u => u.userId === receiverId);
+        if (receiver) io.to(receiver.socketId).emit('receiveMessage', newMsg);
 
-          const receiver = users.find((u) => u.userId === receiverId);
-          if (receiver) {
-            io.to(receiver.socketId).emit('receiveMessage', data);
-          }
+        // Emit to sender
+        socket.emit('messageSent', newMsg);
+      } catch (error: any) {
+        socket.emit('messageError', { error: error.message });
+      }
+    });
 
-          socket.emit('messageSent', data);
-        } catch (error: any) {
-          socket.emit('messageError', {
-            error: error.message,
-          });
-        }
-      },
-    );
-
+    // Disconnect
     socket.on('disconnect', () => {
-      const index = users.findIndex((u) => u.socketId === socket.id);
+      const index = users.findIndex(u => u.socketId === socket.id);
       if (index !== -1) users.splice(index, 1);
       io.emit('getUsers', users);
+      console.log('❌ User disconnected:', socket.id);
     });
   });
 };
+
+
