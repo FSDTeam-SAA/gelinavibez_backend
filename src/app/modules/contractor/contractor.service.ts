@@ -136,7 +136,11 @@ const getAllContractor = async (params: any, options: IOption) => {
     } as any)
     .skip(skip)
     .limit(limit)
-    .populate('service');
+    .populate('service')
+    .populate(
+      'assigningContractor',
+      'firstName lastName email phone profileImage',
+    );
 
   if (!result) throw new AppError(400, 'Failed to get contact');
   const total = await Contractor.countDocuments(whereCondition);
@@ -340,7 +344,10 @@ const addAdminContractorAssign = async (
     contractorId,
     { assigningContractor: assignedUser._id },
     { new: true },
-  ).populate('assigningContractor', 'firstName lastName email phone profileImage');
+  ).populate(
+    'assigningContractor',
+    'firstName lastName email phone profileImage',
+  );
 
   await AdminTracker.create({
     adminId: admin._id,
