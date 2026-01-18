@@ -340,7 +340,7 @@ const addAdminContractorAssign = async (
     contractorId,
     { assigningContractor: assignedUser._id },
     { new: true },
-  );
+  ).populate('assigningContractor', 'firstName lastName email phone profileImage');
 
   await AdminTracker.create({
     adminId: admin._id,
@@ -513,7 +513,6 @@ const getMyContractorService = async (
 };
 
 const allRequestCharge = async (params: any, options: IOption) => {
-  
   const { page, limit, skip, sortBy, sortOrder } = pagination(options);
   const { searchTerm, ...filterData } = params;
 

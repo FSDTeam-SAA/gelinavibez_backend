@@ -124,6 +124,9 @@ const addAdminExterminationAssign = async (
     exterminationId,
     { assigningExtermination: assignedUser._id },
     { new: true },
+  ).populate(
+    'assigningExtermination',
+    'firstName lastName email phone profileImage',
   );
 
   await AdminTracker.create({
