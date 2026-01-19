@@ -679,6 +679,50 @@ const showAssasintBrokerApartment = async (
   };
 };
 
+const createNote = async (
+  userId: string,
+  apartmentId: string,
+  note: string,
+) => {
+  const apartment = await Apartment.findById(apartmentId);
+  console.log(apartment);
+  if (!apartment) {
+    throw new AppError(404, 'Apartment not found');
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new AppError(404, 'User not found');
+  }
+
+  if (user.role === userRole.broker) {
+    if (!apartment.assasintBrokerId?.includes(user._id)) {
+      throw new AppError(404, 'You are not authorized to add note');
+    }
+  }
+
+  const newNote = {
+    note,
+    noteCreate: user._id,
+  };
+
+  apartment.notes.push(newNote);
+
+  await apartment.save();
+
+  if (user.role === userRole.admin) {
+    await AdminTracker.create({
+      adminId: user._id,
+      action: 'add',
+      model: 'Apartment',
+      targetId: apartmentId,
+      description: 'Note added to apartment',
+    });
+  }
+
+  return apartment;
+};
+
 export const apartmentService = {
   createApartment,
   getAllApartment,
@@ -698,4 +742,5 @@ export const apartmentService = {
   assasintBrokers,
   removeBroker,
   showAssasintBrokerApartment,
+  createNote,
 };

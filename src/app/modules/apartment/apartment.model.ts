@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, Types } from 'mongoose';
 import { IApartment } from './apartment.interface';
 
 const apartmentSchema = new Schema<IApartment>(
@@ -95,6 +95,19 @@ const apartmentSchema = new Schema<IApartment>(
       type: [Schema.Types.ObjectId],
       ref: 'User',
     },
+
+    unitId: String,
+    currentStatus: String,
+    inspectionStatus: [String],
+    keyExchangeInfo: [String],
+    packageTracking: [String],
+
+    notes: [
+      {
+        note: String,
+        noteCreate: Types.ObjectId,
+      },
+    ],
 
     ownerId: {
       type: Schema.Types.ObjectId,

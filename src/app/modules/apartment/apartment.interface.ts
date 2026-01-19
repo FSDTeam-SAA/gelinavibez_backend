@@ -35,6 +35,17 @@ export interface IApartment {
   assasintLandlordId?: Types.ObjectId[];
   assasintBrokerId?: Types.ObjectId[];
 
+  unitId?: string;
+  currentStatus?: string;
+  inspectionStatus?: string[];
+  keyExchangeInfo?: string[];
+  packageTracking?: string[];
+
+  notes: {
+    note: string;
+    noteCreate: Types.ObjectId;
+  }[];
+
   createdAt?: Date;
   updatedAt?: Date;
 }

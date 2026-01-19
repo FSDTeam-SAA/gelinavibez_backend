@@ -105,6 +105,12 @@ router.delete(
   apartmentController.removeBroker,
 );
 
+router.post(
+  '/:id/note',
+  auth(userRole.admin, userRole.broker, userRole.superadmin),
+  apartmentController.createNote,
+);
+
 // === assasint landlord ===
 
 export const apartmentRouter = router;
