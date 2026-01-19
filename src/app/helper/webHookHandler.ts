@@ -6,7 +6,7 @@ import User from '../modules/user/user.model';
 import SubscribePlan from '../modules/subscribeplan/subscribeplan.model';
 import Contractor from '../modules/contractor/contractor.model';
 import Extermination from '../modules/extermination/extermination.model';
-import Tenant from '../modules/tenant/tenant.model';
+// import Tenant from '../modules/tenant/tenant.model';
 
 const stripe = new Stripe(config.stripe.secretKey!);
 
