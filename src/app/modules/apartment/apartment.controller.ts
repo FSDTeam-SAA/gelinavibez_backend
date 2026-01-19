@@ -143,6 +143,11 @@ const getMyApartments = catchAsync(async (req, res) => {
     'amenities',
     'status',
     'day',
+    'packageTracking',
+    'keyExchangeInfo',
+    'inspectionStatus',
+    'currentStatus',
+    'unitId',
   ]);
   const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
   const result = await apartmentService.getMyApartments(
@@ -256,7 +261,7 @@ const removeLandlord = catchAsync(async (req, res) => {
 const showAssasintLandlordApartment = catchAsync(async (req, res) => {
   const userId = req.user?.id;
   const filters = pick(req.query, [
-    'searchTerm',
+     'searchTerm',
     'title',
     'description',
     'aboutListing',
@@ -267,6 +272,11 @@ const showAssasintLandlordApartment = catchAsync(async (req, res) => {
     'amenities',
     'status',
     'day',
+    'packageTracking',
+    'keyExchangeInfo',
+    'inspectionStatus',
+    'currentStatus',
+    'unitId',
   ]);
   const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
   const result = await apartmentService.showAssasintLandlordApartment(
@@ -315,7 +325,7 @@ const removeBroker = catchAsync(async (req, res) => {
 const showAssasintBrokerApartment = catchAsync(async (req, res) => {
   const userId = req.user?.id;
   const filters = pick(req.query, [
-    'searchTerm',
+     'searchTerm',
     'title',
     'description',
     'aboutListing',
@@ -326,6 +336,11 @@ const showAssasintBrokerApartment = catchAsync(async (req, res) => {
     'amenities',
     'status',
     'day',
+    'packageTracking',
+    'keyExchangeInfo',
+    'inspectionStatus',
+    'currentStatus',
+    'unitId',
   ]);
   const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
   const result = await apartmentService.showAssasintBrokerApartment(

@@ -61,6 +61,11 @@ const getAllApartment = async (params: any, options: IOption) => {
     'amenities',
     'status',
     'day',
+    'packageTracking',
+    'keyExchangeInfo',
+    'inspectionStatus',
+    'currentStatus',
+    'unitId',
   ];
 
   const andCondition: any[] = [];
@@ -166,6 +171,11 @@ const getAllApartmentGroupByDay = async (params: any, options: IOption) => {
     'amenities',
     'status',
     'day',
+    'packageTracking',
+    'keyExchangeInfo',
+    'inspectionStatus',
+    'currentStatus',
+    'unitId',
   ];
 
   const andCondition: any[] = [];
@@ -254,6 +264,11 @@ const getMyApartments = async (
     'amenities',
     'status',
     'day',
+    'packageTracking',
+    'keyExchangeInfo',
+    'inspectionStatus',
+    'currentStatus',
+    'unitId',
   ];
 
   const andCondition: any[] = [];
