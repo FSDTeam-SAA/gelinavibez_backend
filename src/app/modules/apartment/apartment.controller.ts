@@ -341,6 +341,18 @@ const showAssasintBrokerApartment = catchAsync(async (req, res) => {
   });
 });
 
+const createNote = catchAsync(async (req, res) => {
+  const userId = req.user?.id;
+  const { note } = req.body;
+  const result = await apartmentService.createNote(userId, req.params.id, note);
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Note added successfully',
+    data: result,
+  });
+});
+
 export const apartmentController = {
   createApartment,
   getAllApartment,
@@ -360,4 +372,5 @@ export const apartmentController = {
   assasintBroker,
   removeBroker,
   showAssasintBrokerApartment,
+  createNote,
 };
