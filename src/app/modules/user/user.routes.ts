@@ -60,7 +60,15 @@ router.get(
 
 router.get(
   '/all-user',
-  auth(userRole.admin, userRole.superadmin),
+  auth(
+    userRole.admin,
+    userRole.superadmin,
+    userRole.landlord,
+    userRole.broker,
+    userRole.contractor,
+    userRole.exterminator,
+    userRole.user,
+  ),
   userController.getAllUser,
 );
 
