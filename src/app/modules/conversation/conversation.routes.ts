@@ -40,6 +40,7 @@ router.get(
     userRole.exterminator,
     userRole.admin,
     userRole.superadmin,
+    userRole.broker,
   ),
   conversationController.getAllConversations,
 );
