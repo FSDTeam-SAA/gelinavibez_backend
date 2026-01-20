@@ -21,6 +21,7 @@ router.post(
     userRole.exterminator,
     userRole.admin,
     userRole.superadmin,
+    userRole.broker,
   ),
   fileUploader.upload.single('file'),
   messageController.createMessage,
@@ -40,6 +41,7 @@ router.get(
     userRole.exterminator,
     userRole.admin,
     userRole.superadmin,
+    userRole.broker,
   ),
   messageController.getMessages,
 );
@@ -58,6 +60,7 @@ router.put(
     userRole.exterminator,
     userRole.admin,
     userRole.superadmin,
+    userRole.broker,
   ),
   messageController.updateMessage,
 );
