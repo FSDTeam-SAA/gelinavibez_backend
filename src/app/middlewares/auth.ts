@@ -24,6 +24,8 @@ const auth = (...role: string[]) => {
         config.jwt.accessTokenSecret as Secret,
       ) as JwtPayload;
 
+      // console.log(varifiedToken);
+
       // Defensive check for role
       if (
         role.length &&

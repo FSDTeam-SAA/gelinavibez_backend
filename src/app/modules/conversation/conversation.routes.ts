@@ -20,6 +20,7 @@ router.post(
     userRole.exterminator,
     userRole.admin,
     userRole.superadmin,
+    userRole.broker,
   ),
   conversationController.createConversation,
 );
