@@ -3,7 +3,9 @@ import sendResponse from '../../utils/sendResponse';
 import { conversationService } from './conversation.service';
 
 const createConversation = catchAsync(async (req, res) => {
-  const userId = req.user.id; // Logged-in user ID
+  const userId = req.user.id;
+  console.log(userId);
+
   const { receiverId } = req.body; // The user to chat with
 
   const result = await conversationService.createConversation(
