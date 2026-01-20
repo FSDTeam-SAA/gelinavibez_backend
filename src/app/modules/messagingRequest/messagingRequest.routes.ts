@@ -13,6 +13,7 @@ router.post(
     userRole.contractor,
     userRole.exterminator,
     userRole.landlord,
+    userRole.broker,
   ),
   messagingRequestController.sendRequest,
 );
