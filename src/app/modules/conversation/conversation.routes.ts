@@ -21,6 +21,7 @@ router.post(
     userRole.admin,
     userRole.superadmin,
     userRole.broker,
+    userRole.landlord,
   ),
   conversationController.createConversation,
 );
@@ -41,6 +42,7 @@ router.get(
     userRole.admin,
     userRole.superadmin,
     userRole.broker,
+    userRole.landlord,
   ),
   conversationController.getAllConversations,
 );
