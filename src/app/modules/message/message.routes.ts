@@ -22,6 +22,7 @@ router.post(
     userRole.admin,
     userRole.superadmin,
     userRole.broker,
+    userRole.landlord,
   ),
   fileUploader.upload.single('file'),
   messageController.createMessage,
@@ -42,6 +43,7 @@ router.get(
     userRole.admin,
     userRole.superadmin,
     userRole.broker,
+    userRole.landlord,
   ),
   messageController.getMessages,
 );
