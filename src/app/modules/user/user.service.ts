@@ -319,6 +319,15 @@ const approvedLandlordBrokerAdmin = async (userId: string, id: string) => {
     description: `User approved ${userById.role}`,
   });
 
+  await sendMailer(
+    userById.email,
+    userById.firstName + ' ' + userById.lastName,
+    `<h1>Welcome to Bridge Point Solution</h1>
+    <p>Your account has been approved successfully</p>
+    <p>Thank you</p>
+    <p>Bridge Point Solution Team</p>`,
+  );
+
   return result;
 };
 const rejectedLandlordBrokerAdmin = async (userId: string, id: string) => {
@@ -349,6 +358,15 @@ const rejectedLandlordBrokerAdmin = async (userId: string, id: string) => {
     targetId: result?._id,
     description: `User rejected ${userById.role}`,
   });
+
+  await sendMailer(
+    userById.email,
+    userById.firstName + ' ' + userById.lastName,
+    `<h1>Welcome to Bridge Point Solution</h1>
+    <p>Your account has been rejected successfully</p>
+    <p>Thank you</p>
+    <p>Bridge Point Solution Team</p>`,
+  );
 
   return result;
 };
