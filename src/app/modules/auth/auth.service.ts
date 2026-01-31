@@ -28,15 +28,30 @@ const registerUser = async (payload: Partial<IUser>) => {
 
   const user = await User.create(payload);
 
-  await sendMailer(
-    user.email,
-    user.firstName + ' ' + user.lastName,
-    `<h1>Welcome to Bridge Point Solution</h1>
+  if (
+    user.role === userRole.admin ||
+    user.role === userRole.broker ||
+    user.role === userRole.landlord
+  ) {
+    await sendMailer(
+      user.email,
+      user.firstName + ' ' + user.lastName,
+      `<h1>Welcome to Bridge Point Solution</h1>
     <p>Your account has been created successfully</p>
     <p>Please verify your email to continue</p>
     <p>Thank you</p>
     <p>Bridge Point Solution Team</p>`,
-  );
+    );
+  } else {
+    await sendMailer(
+      user.email,
+      user.firstName + ' ' + user.lastName,
+      `<h1>Welcome to Bridge Point Solution</h1>
+    <p>Your account has been created successfully</p>
+    <p>Thank you</p>
+    <p>Bridge Point Solution Team</p>`,
+    );
+  }
 
   return user;
 };
