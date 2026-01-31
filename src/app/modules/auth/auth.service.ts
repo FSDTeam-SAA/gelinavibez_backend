@@ -27,6 +27,17 @@ const registerUser = async (payload: Partial<IUser>) => {
   }
 
   const user = await User.create(payload);
+
+  await sendMailer(
+    user.email,
+    user.firstName + ' ' + user.lastName,
+    `<h1>Welcome to Bridge Point Solution</h1>
+    <p>Your account has been created successfully</p>
+    <p>Please verify your email to continue</p>
+    <p>Thank you</p>
+    <p>Bridge Point Solution Team</p>`,
+  );
+
   return user;
 };
 
@@ -57,6 +68,15 @@ const loginUser = async (payload: Partial<IUser>) => {
     { id: user._id, role: user.role, email: user.email },
     config.jwt.refreshTokenSecret as Secret,
     config.jwt.refreshTokenExpires,
+  );
+
+  await sendMailer(
+    user.email,
+    user.firstName + ' ' + user.lastName,
+    `<h1>Welcome to Bridge Point Solution</h1>
+    <p>Your account has been logged in successfully</p>
+    <p>Thank you</p>
+    <p>Bridge Point Solution Team</p>`,
   );
 
   const { password, ...userWithoutPassword } = user.toObject();
@@ -157,6 +177,15 @@ const changePassword = async (
 
   user.password = newPassword;
   await user.save();
+
+  await sendMailer(
+    user.email,
+    user.firstName + ' ' + user.lastName,
+    `<h1>Password changed successfully</h1>
+    <p>Your password has been changed successfully</p>
+    <p>Thank you</p>
+    <p>Bridge Point Solution Team</p>`,
+  );
 
   return { message: 'Password changed successfully' };
 };
