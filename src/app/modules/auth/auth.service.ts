@@ -85,15 +85,6 @@ const loginUser = async (payload: Partial<IUser>) => {
     config.jwt.refreshTokenExpires,
   );
 
-  await sendMailer(
-    user.email,
-    user.firstName + ' ' + user.lastName,
-    `<h1>Welcome to Bridge Point Solution</h1>
-    <p>Your account has been logged in successfully</p>
-    <p>Thank you</p>
-    <p>Bridge Point Solution Team</p>`,
-  );
-
   const { password, ...userWithoutPassword } = user.toObject();
   return { accessToken, refreshToken, user: userWithoutPassword };
 };
