@@ -4,15 +4,14 @@
   "description": "",
   "main": "server.js",
   "scripts": {
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "prettier": "prettier --ignore-path .gitignore --write \"./src/**/*.+(js|ts|json)\"",
-    "prettier:fix": "prettier --write src",
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "build": "tsc",
-    "start": "node dist/server.js",
-    "build-and-start": "npm run build && npm run start"
+    "start:prod": "node dist/server.js",
+    "start": "npm run start:prod",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prettier": "prettier --write \"src/**/*.{js,ts,json}\"",
+    "build-and-start": "npm run build && npm run start:prod"
   },
   "keywords": [],
   "author": "",
@@ -37,9 +36,9 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",
-    "@types/cookie-parser": "^1.4.10",
+    "@types/cookie-parser": "^1.4.9",
     "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.6",
+    "@types/express": "^5.0.4",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/node": "^24.8.1",
